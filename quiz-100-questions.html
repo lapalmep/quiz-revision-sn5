@@ -1,0 +1,2503 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — Mathématiques 5e secondaire SN</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js" crossorigin="anonymous"></script>
+<style>
+:root {
+  --bleu:#1a5fa8; --bleu-clair:#e8f1fb; --bleu-hover:#154d8a;
+  --vert:#2a7a3b; --vert-clair:#e6f4ea;
+  --rouge:#b91c1c; --rouge-clair:#fef2f2;
+  --orange:#b45309; --orange-clair:#fffbeb;
+  --gris-bg:#f5f5f5; --gris-bord:#d1d5db;
+  --texte:#1a1a1a; --texte-sec:#555;
+  --rayon:8px; --ombre:0 2px 8px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-bg);color:var(--texte);min-height:100vh}
+
+/* EN-TÊTE */
+.entete{background:var(--bleu);color:#fff;padding:14px 24px;position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.entete-ligne1{display:flex;align-items:center;justify-content:space-between;margin-bottom:0}
+.entete.quiz-actif .entete-ligne1{margin-bottom:8px}
+.entete-titre{font-size:1rem;font-weight:600}
+.entete-eleve{font-size:.85rem;opacity:.85}
+.grille-entete{width:100%;padding-bottom:8px}
+.grille-entete-boutons{display:grid;grid-template-columns:repeat(30,1fr);gap:3px;width:100%}
+.grille-entete-btn{width:100%;aspect-ratio:1.4;border-radius:3px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);font-size:.65rem;font-weight:700;color:rgba(255,255,255,.9);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;padding:0}
+.grille-entete-btn:hover{background:rgba(255,255,255,.35);border-color:rgba(255,255,255,.7)}
+.grille-entete-btn.repondu{background:rgba(100,220,130,.5);border-color:rgba(100,220,130,.8);color:#fff}
+.grille-entete-btn.actuel{background:#fff;border-color:#fff;color:var(--bleu);font-weight:800}
+.barre-prog{height:3px;background:rgba(255,255,255,.25);position:sticky;top:0;z-index:99}
+.barre-prog-inner{height:100%;background:#7ec8f8;transition:width .3s ease;width:0%}
+
+/* ÉCRANS */
+.ecran{display:none}
+.ecran.actif{display:block}
+
+/* CARTE */
+.carte{background:#fff;border-radius:12px;padding:36px 32px;box-shadow:var(--ombre)}
+.carte h1{font-size:1.3rem;font-weight:600;color:var(--bleu);margin-bottom:6px}
+.carte p{font-size:.9rem;color:var(--texte-sec);margin-bottom:20px;line-height:1.6}
+.carte-section{max-width:540px;margin:60px auto;padding:0 16px}
+
+/* ÉTAPES */
+.etapes{display:flex;gap:0;margin-bottom:28px}
+.etape{flex:1;text-align:center;position:relative}
+.etape::after{content:'';position:absolute;top:14px;left:50%;width:100%;height:2px;background:var(--gris-bord);z-index:0}
+.etape:last-child::after{display:none}
+.etape-num{width:28px;height:28px;border-radius:50%;background:var(--gris-bord);color:#fff;font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 4px;position:relative;z-index:1;transition:background .3s}
+.etape-label{font-size:.72rem;color:var(--texte-sec)}
+.etape.active .etape-num{background:var(--bleu)}
+.etape.done .etape-num{background:var(--vert)}
+
+/* CHAMPS */
+.champ-label{font-size:.85rem;font-weight:600;color:var(--texte);margin-bottom:6px;display:block}
+.champ-input{width:100%;padding:10px 14px;border:1.5px solid var(--gris-bord);border-radius:var(--rayon);font-size:.95rem;color:var(--texte);background:#fff;transition:border-color .2s;margin-bottom:16px}
+.champ-input:focus{outline:none;border-color:var(--bleu)}
+.champ-groupe{margin-bottom:16px}
+
+/* MESSAGES */
+.msg-erreur{background:var(--rouge-clair);color:var(--rouge);border:1px solid #fca5a5;border-radius:var(--rayon);padding:10px 14px;font-size:.85rem;margin-bottom:14px;display:none}
+.msg-erreur.visible{display:block}
+.msg-info{background:var(--bleu-clair);color:var(--bleu);border:1px solid #93c5fd;border-radius:var(--rayon);padding:10px 14px;font-size:.85rem;margin-bottom:14px}
+
+/* BOUTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:11px 24px;border:none;border-radius:var(--rayon);font-size:.95rem;font-weight:600;cursor:pointer;transition:background .2s,opacity .2s}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-principal{background:var(--bleu);color:#fff;width:100%;justify-content:center}
+.btn-principal:hover:not(:disabled){background:var(--bleu-hover)}
+.btn-secondaire{background:var(--gris-bg);color:var(--texte);border:1.5px solid var(--gris-bord)}
+.btn-secondaire:hover:not(:disabled){background:#e9e9e9}
+.btn-soumettre{background:var(--vert);color:#fff}
+.btn-soumettre:hover:not(:disabled){background:#1e6030}
+
+/* QUIZ */
+#ecran-quiz{max-width:680px;margin:0 auto;padding:0 16px}
+.question-slide{display:none}
+.question-slide.active{display:block;background:#fff;border-radius:12px;padding:28px 28px 24px;box-shadow:var(--ombre);margin:24px 0}
+.q-numero{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--bleu);margin-bottom:12px}
+.q-texte{font-size:1rem;line-height:1.65;color:var(--texte);margin-bottom:20px}
+.choix-groupe{display:flex;flex-direction:column;gap:10px}
+.choix-label{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border:1.5px solid var(--gris-bord);border-radius:var(--rayon);cursor:pointer;transition:border-color .15s,background .15s;line-height:1.5}
+.choix-label:hover{border-color:var(--bleu);background:var(--bleu-clair)}
+.choix-radio{display:none}
+.choix-label:has(.choix-radio:checked){border-color:var(--bleu);background:var(--bleu-clair)}
+.choix-lettre{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--gris-bg);border:1.5px solid var(--gris-bord);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:var(--texte-sec);transition:background .15s,color .15s,border-color .15s;margin-top:1px}
+.choix-label:has(.choix-radio:checked) .choix-lettre{background:var(--bleu);border-color:var(--bleu);color:#fff}
+.choix-texte{font-size:.95rem;color:var(--texte)}
+
+/* NAVIGATION QUIZ */
+.nav-quiz{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 0 24px}
+.nav-compteur{font-size:.85rem;color:var(--texte-sec);text-align:center;flex:1}
+.nav-compteur strong{color:var(--bleu);font-weight:700}
+
+/* GRILLE */
+/* grille nav déplacée dans l'entête */
+
+/* ZONE SOUMISSION */
+.zone-soumettre{background:#fff;border-radius:12px;padding:20px 24px;box-shadow:var(--ombre);margin-bottom:24px;text-align:center}
+.zone-soumettre p{font-size:.9rem;color:var(--texte-sec);margin-bottom:14px}
+.cpt-rep{font-weight:700;color:var(--bleu)}
+
+/* RÉSULTATS */
+#ecran-resultats{max-width:680px;margin:0 auto;padding:0 16px}
+.score-cercle{width:130px;height:130px;border-radius:50%;background:var(--bleu-clair);border:5px solid var(--bleu);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 16px}
+.score-num{font-size:2.2rem;font-weight:700;color:var(--bleu);line-height:1}
+.score-den{font-size:.85rem;color:var(--texte-sec)}
+.themes-grille{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.theme-item{background:var(--gris-bg);border-radius:var(--rayon);padding:10px 12px;font-size:.82rem}
+.theme-nom{color:var(--texte-sec);margin-bottom:4px}
+.theme-score{font-weight:700;color:var(--bleu)}
+.barre-theme{height:5px;background:#ddd;border-radius:3px;margin-top:5px;overflow:hidden}
+.barre-theme-inner{height:100%;border-radius:3px}
+.fiche-info{display:inline-block;background:var(--bleu-clair);color:var(--bleu);border-radius:6px;padding:4px 10px;font-size:.8rem;font-weight:700;margin-top:6px}
+
+@media(max-width:600px){
+  .carte{padding:24px 18px}
+  .question-slide.active{padding:20px 16px}
+  .themes-grille{grid-template-columns:1fr}
+  .nav-quiz{gap:8px}
+  .btn{padding:10px 16px;font-size:.88rem}
+}
+
+/* ONGLETS CONNEXION */
+.onglets {
+  display: flex;
+  border-bottom: 2px solid var(--gris-bord);
+  margin-bottom: 24px;
+}
+.onglet-btn {
+  flex: 1;
+  padding: 12px 8px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  font-size: .92rem;
+  font-weight: 600;
+  color: var(--texte-sec);
+  cursor: pointer;
+  transition: color .2s, border-color .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.onglet-btn:hover { color: var(--bleu); }
+.onglet-btn.actif { color: var(--bleu); border-bottom-color: var(--bleu); }
+.onglet-contenu { display: none; }
+.onglet-contenu.actif { display: block; }
+
+/* CHAMP MOT DE PASSE avec œil */
+.champ-mdp-wrap { position: relative; margin-bottom: 16px; }
+.champ-mdp-wrap .champ-input { margin-bottom: 0; padding-right: 42px; }
+.btn-oeil {
+  position: absolute; right: 12px; top: 50%;
+  transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  color: var(--texte-sec); font-size: 1rem; padding: 2px;
+  transition: color .2s;
+}
+.btn-oeil:hover { color: var(--bleu); }
+
+/* ÉTAPES CRÉATION */
+.creation-step { display: none; }
+.creation-step.actif { display: block; }
+.step-indicateur {
+  display: flex; gap: 8px; margin-bottom: 20px; align-items: center;
+}
+.step-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--gris-bord); transition: background .3s;
+}
+.step-dot.actif { background: var(--bleu); }
+.step-dot.done  { background: var(--vert); }
+.step-label { font-size: .8rem; color: var(--texte-sec); }
+
+/* FORCE MDP */
+.force-wrap { height: 4px; background: #e5e7eb; border-radius: 2px; margin: 6px 0 14px; }
+.force-barre { height: 100%; border-radius: 2px; transition: width .3s, background .3s; width: 0; }
+.force-texte { font-size: .75rem; color: var(--texte-sec); margin-bottom: 14px; }
+
+/* TABLES DE VALEURS */
+.table-valeurs {
+  border-collapse: collapse;
+  margin: 12px auto;
+  font-size: .95rem;
+  display: table;
+}
+.table-valeurs th, .table-valeurs td {
+  border: 1.5px solid #555;
+  padding: 10px 28px;
+  text-align: center;
+  background: #fff;
+  font-weight: normal;
+}
+.table-valeurs th {
+  font-style: italic;
+  font-weight: normal;
+}
+</style>
+</head>
+<body>
+
+<div class="entete">
+  <div class="entete-ligne1">
+    <div class="entete-titre">Quiz — Mathématiques SN 5<sup>e</sup></div>
+    <div class="entete-eleve" id="entete-eleve"></div>
+  </div>
+  <div class="grille-entete" id="grille-entete" style="display:none">
+    <div class="grille-entete-boutons" id="grille-entete-boutons"></div>
+  </div>
+</div>
+<div class="barre-prog"><div class="barre-prog-inner" id="barre"></div></div>
+
+<!-- ===== ÉCRAN 1 : IDENTIFICATION ===== -->
+<div class="ecran actif" id="ecran-id">
+  <div class="carte-section">
+    <div class="carte">
+      <h1 style="margin-bottom:20px">Quiz — Mathématiques SN 5<sup>e</sup></h1>
+
+      <!-- ONGLETS -->
+      <div class="onglets">
+        <button class="onglet-btn actif" id="onglet-connexion" onclick="basculerOnglet('connexion')">
+          ➜ Connexion
+        </button>
+        <button class="onglet-btn" id="onglet-creation" onclick="basculerOnglet('creation')">
+          ＋ Créer un compte
+        </button>
+      </div>
+
+      <div id="msg-err-id" class="msg-erreur"></div>
+      <div id="msg-ok-id"  class="msg-succes" style="display:none"></div>
+
+      <!-- ===== ONGLET CONNEXION ===== -->
+      <div class="onglet-contenu actif" id="contenu-connexion">
+        <div class="champ-groupe">
+          <label class="champ-label" for="co-id">
+            Numéro de fiche
+          </label>
+          <input class="champ-input" id="co-id" type="text"
+            placeholder="ex. 12345" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="champ-groupe">
+          <label class="champ-label" for="co-mdp">
+            Mot de passe
+          </label>
+          <div class="champ-mdp-wrap">
+            <input class="champ-input" id="co-mdp" type="password"
+              placeholder="••••••••" autocomplete="current-password">
+            <button class="btn-oeil" type="button" onclick="toggleOeil('co-mdp', this)">👁</button>
+          </div>
+        </div>
+        <button class="btn btn-principal" id="btn-connexion" onclick="seConnecter()">
+          Se connecter →
+        </button>
+      </div>
+
+      <!-- ===== ONGLET CRÉATION ===== -->
+      <div class="onglet-contenu" id="contenu-creation">
+
+        <!-- Indicateur étapes -->
+        <div class="step-indicateur">
+          <div class="step-dot actif" id="cdot-1"></div>
+          <div class="step-dot"      id="cdot-2"></div>
+          <div class="step-label"    id="clabel-step">Étape 1 sur 2</div>
+        </div>
+
+        <!-- Étape 1 : vérification id + courriel -->
+        <div class="creation-step actif" id="cr-step1">
+          <div class="champ-groupe">
+            <label class="champ-label" for="cr-id">Numéro de fiche</label>
+            <input class="champ-input" id="cr-id" type="text"
+              placeholder="ex. 12345" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="champ-groupe">
+            <label class="champ-label" for="cr-courriel">Adresse courriel scolaire</label>
+            <input class="champ-input" id="cr-courriel" type="email"
+              placeholder="ex. prenom.nom@csxx.qc.ca" autocomplete="off" spellcheck="false">
+          </div>
+          <button class="btn btn-principal" id="btn-cr-step1" onclick="creerStep1()">
+            Continuer →
+          </button>
+        </div>
+
+        <!-- Étape 2 : nom + code classe + mot de passe -->
+        <div class="creation-step" id="cr-step2">
+          <div class="champ-groupe">
+            <label class="champ-label" for="cr-nom">Nom d'affichage</label>
+            <input class="champ-input" id="cr-nom" type="text"
+              placeholder="ex. Marie Tremblay" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="champ-groupe">
+            <label class="champ-label" for="cr-code">Code de classe</label>
+            <input class="champ-input" id="cr-code" type="text"
+              placeholder="ex. MAT501" autocomplete="off" spellcheck="false"
+              style="text-transform:uppercase;letter-spacing:.1em">
+          </div>
+          <div class="champ-groupe">
+            <label class="champ-label" for="cr-mdp1">Mot de passe</label>
+            <div class="champ-mdp-wrap">
+              <input class="champ-input" id="cr-mdp1" type="password"
+                placeholder="Minimum 6 caractères" autocomplete="new-password"
+                oninput="evaluerMdp(this.value)">
+              <button class="btn-oeil" type="button" onclick="toggleOeil('cr-mdp1', this)">👁</button>
+            </div>
+            <div class="force-wrap"><div class="force-barre" id="force-barre"></div></div>
+            <div class="force-texte" id="force-texte"></div>
+          </div>
+          <div class="champ-groupe">
+            <label class="champ-label" for="cr-mdp2">Confirmer le mot de passe</label>
+            <div class="champ-mdp-wrap">
+              <input class="champ-input" id="cr-mdp2" type="password"
+                placeholder="Répète ton mot de passe" autocomplete="new-password">
+              <button class="btn-oeil" type="button" onclick="toggleOeil('cr-mdp2', this)">👁</button>
+            </div>
+          </div>
+          <button class="btn btn-principal" id="btn-cr-step2" onclick="creerStep2()">
+            Créer mon compte →
+          </button>
+        </div>
+
+      </div><!-- fin contenu-creation -->
+    </div>
+  </div>
+</div>
+
+<!-- ===== ÉCRAN 2 : QUIZ ===== -->
+<div class="ecran" id="ecran-quiz">
+  <div id="banner-restauration" style="display:none;background:#e6f4ea;color:#2a7a3b;border:1px solid #86c99a;border-radius:8px;padding:10px 16px;font-size:.85rem;margin-bottom:12px;font-weight:600"></div>
+
+
+  <div id="conteneur-questions">
+<div id="conteneur-questions">
+  <div class="question-slide" id="slide-1" data-num="1">
+    <div class="q-numero">Question 1 <span class="q-theme"></span></div>
+    <div class="q-texte">La règle de la fonction \(f\) est \(f(x) = -2\sqrt{x-4} + 72\).<br>Sur quel intervalle la fonction \(f\) est-elle positive&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="1" data-val="A">
+            <input type="radio" name="q1" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(x \in \mathbb{R}\)</span>
+          </label>
+          <label class="choix-label" data-q="1" data-val="B">
+            <input type="radio" name="q1" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(x \in [-4,\, 1296]\)</span>
+          </label>
+          <label class="choix-label" data-q="1" data-val="C">
+            <input type="radio" name="q1" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(x \in [-4,\, 1300]\)</span>
+          </label>
+          <label class="choix-label" data-q="1" data-val="D">
+            <input type="radio" name="q1" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(x \in [4,\, 1300]\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-2" data-num="2">
+    <div class="q-numero">Question 2 <span class="q-theme"></span></div>
+    <div class="q-texte">Les composantes du vecteur \(\vec{v}\) sont \((0, -2)\).<br>Quelle est l'orientation du vecteur \(\vec{v}\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="2" data-val="A">
+            <input type="radio" name="q2" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(-90°\)</span>
+          </label>
+          <label class="choix-label" data-q="2" data-val="B">
+            <input type="radio" name="q2" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(90°\)</span>
+          </label>
+          <label class="choix-label" data-q="2" data-val="C">
+            <input type="radio" name="q2" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(180°\)</span>
+          </label>
+          <label class="choix-label" data-q="2" data-val="D">
+            <input type="radio" name="q2" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(280°\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-3" data-num="3">
+    <div class="q-numero">Question 3 <span class="q-theme"></span></div>
+    <div class="q-texte">La norme des vecteurs \(\vec{u}\) et \(\vec{v}\) est respectivement de 50 unités et de 24 unités. L'angle entre ces deux vecteurs mesure \(60°\).<br>Quel est le produit scalaire des vecteurs \(\vec{u}\) et \(\vec{v}\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="3" data-val="A">
+            <input type="radio" name="q3" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(37\)</span>
+          </label>
+          <label class="choix-label" data-q="3" data-val="B">
+            <input type="radio" name="q3" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(64\)</span>
+          </label>
+          <label class="choix-label" data-q="3" data-val="C">
+            <input type="radio" name="q3" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(600\)</span>
+          </label>
+          <label class="choix-label" data-q="3" data-val="D">
+            <input type="radio" name="q3" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(1039\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-4" data-num="4">
+    <div class="q-numero">Question 4 <span class="q-theme"></span></div>
+    <div class="q-texte">Voici une expression trigonométrique&nbsp;: \(\dfrac{\tan\theta\,\sin^2\theta + \tan\theta\,\cos^2\theta}{\sin\theta}\)<br>À quel rapport trigonométrique cette expression est-elle équivalente&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="4" data-val="A">
+            <input type="radio" name="q4" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(\sin\theta\)</span>
+          </label>
+          <label class="choix-label" data-q="4" data-val="B">
+            <input type="radio" name="q4" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(\cos\theta\)</span>
+          </label>
+          <label class="choix-label" data-q="4" data-val="C">
+            <input type="radio" name="q4" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(\csc\theta\)</span>
+          </label>
+          <label class="choix-label" data-q="4" data-val="D">
+            <input type="radio" name="q4" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(\sec\theta\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-5" data-num="5">
+    <div class="q-numero">Question 5 <span class="q-theme"></span></div>
+    <div class="q-texte">Quelles sont les solutions de l'inéquation \(3|x-4|+2 < 26\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="5" data-val="A">
+            <input type="radio" name="q5" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(x \in \mathbb{R}\)</span>
+          </label>
+          <label class="choix-label" data-q="5" data-val="B">
+            <input type="radio" name="q5" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(x \in [-4,\,8]\)</span>
+          </label>
+          <label class="choix-label" data-q="5" data-val="C">
+            <input type="radio" name="q5" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(x \in\, ]{-4},\,12[\)</span>
+          </label>
+          <label class="choix-label" data-q="5" data-val="D">
+            <input type="radio" name="q5" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(x \in\, ]4,\,12[\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-6" data-num="6">
+    <div class="q-numero">Question 6 <span class="q-theme"></span></div>
+    <div class="q-texte">Une ellipse centrée à l'origine possède&nbsp;: grand axe = 10 unités, petit axe = 4 unités, foyers sur l'axe des \(y\).<br>Quelle est l'équation de cette ellipse&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="6" data-val="A">
+            <input type="radio" name="q6" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(\dfrac{x^2}{25}+\dfrac{y^2}{4}=1\)</span>
+          </label>
+          <label class="choix-label" data-q="6" data-val="B">
+            <input type="radio" name="q6" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(\dfrac{x^2}{4}+\dfrac{y^2}{25}=1\)</span>
+          </label>
+          <label class="choix-label" data-q="6" data-val="C">
+            <input type="radio" name="q6" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(\dfrac{x^2}{100}+\dfrac{y^2}{16}=1\)</span>
+          </label>
+          <label class="choix-label" data-q="6" data-val="D">
+            <input type="radio" name="q6" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(\dfrac{x^2}{16}+\dfrac{y^2}{100}=1\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-7" data-num="7">
+    <div class="q-numero">Question 7 <span class="q-theme"></span></div>
+    <div class="q-texte">Quelle est la valeur de l'expression \(\log_2 8 - \dfrac{\log 25 + \log 4}{2}\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="7" data-val="A">
+            <input type="radio" name="q7" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(-1\)</span>
+          </label>
+          <label class="choix-label" data-q="7" data-val="B">
+            <input type="radio" name="q7" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(3\)</span>
+          </label>
+          <label class="choix-label" data-q="7" data-val="C">
+            <input type="radio" name="q7" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(4\)</span>
+          </label>
+          <label class="choix-label" data-q="7" data-val="D">
+            <input type="radio" name="q7" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(7\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-8" data-num="8">
+    <div class="q-numero">Question 8 <span class="q-theme"></span></div>
+    <div class="q-texte">La règle de la fonction \(f\) est \(f(x) = -3\cos\!\left(\dfrac{\pi}{2}x\right)+2\).<br>Quelle est l'image de la fonction \(f\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="8" data-val="A">
+            <input type="radio" name="q8" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\([-3,\,2]\)</span>
+          </label>
+          <label class="choix-label" data-q="8" data-val="B">
+            <input type="radio" name="q8" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\([-3,\,5]\)</span>
+          </label>
+          <label class="choix-label" data-q="8" data-val="C">
+            <input type="radio" name="q8" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\([-1,\,5]\)</span>
+          </label>
+          <label class="choix-label" data-q="8" data-val="D">
+            <input type="radio" name="q8" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\([2,\,5]\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-9" data-num="9">
+    <div class="q-numero">Question 9 <span class="q-theme"></span></div>
+    <div class="q-texte">La règle de la fonction \(f\) est \(f(x) = |4x+88|+1\).<br>Sur quel intervalle la fonction \(f\) est-elle décroissante&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="9" data-val="A">
+            <input type="radio" name="q9" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(x \in\,]{-\infty},\,-88]\)</span>
+          </label>
+          <label class="choix-label" data-q="9" data-val="B">
+            <input type="radio" name="q9" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(x \in\,]{-\infty},\,-22]\)</span>
+          </label>
+          <label class="choix-label" data-q="9" data-val="C">
+            <input type="radio" name="q9" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(x \in\,]{-\infty},\,88]\)</span>
+          </label>
+          <label class="choix-label" data-q="9" data-val="D">
+            <input type="radio" name="q9" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(x \in\,]{-\infty},\,22]\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-10" data-num="10">
+    <div class="q-numero">Question 10 <span class="q-theme"></span></div>
+    <div class="q-texte">La règle de la fonction \(f\) est \(f(x) = \dfrac{x+12}{x+2}\).<br>Quelles sont les coordonnées du point d'intersection des asymptotes&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="10" data-val="A">
+            <input type="radio" name="q10" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\((-12,\,2)\)</span>
+          </label>
+          <label class="choix-label" data-q="10" data-val="B">
+            <input type="radio" name="q10" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\((12,\,2)\)</span>
+          </label>
+          <label class="choix-label" data-q="10" data-val="C">
+            <input type="radio" name="q10" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\((-2,\,1)\)</span>
+          </label>
+          <label class="choix-label" data-q="10" data-val="D">
+            <input type="radio" name="q10" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\((2,\,1)\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-11" data-num="11">
+    <div class="q-numero">Question 11 <span class="q-theme"></span></div>
+    <div class="q-texte">La règle de la fonction \(f\) est \(f(x) = \dfrac{2}{x-3}+8\).<br>Quelle est la règle de la réciproque&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="11" data-val="A">
+            <input type="radio" name="q11" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(f^{-1}(x)=\dfrac{3x-22}{x-8}\)</span>
+          </label>
+          <label class="choix-label" data-q="11" data-val="B">
+            <input type="radio" name="q11" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(f^{-1}(x)=\dfrac{3x-22}{x+8}\)</span>
+          </label>
+          <label class="choix-label" data-q="11" data-val="C">
+            <input type="radio" name="q11" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(f^{-1}(x)=\dfrac{3x+22}{x-8}\)</span>
+          </label>
+          <label class="choix-label" data-q="11" data-val="D">
+            <input type="radio" name="q11" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(f^{-1}(x)=\dfrac{3x+22}{x+8}\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-12" data-num="12">
+    <div class="q-numero">Question 12 <span class="q-theme"></span></div>
+    <div class="q-texte">Table de valeurs de la fonction exponentielle \(f\)&nbsp;:<table class="table-valeurs"><thead><tr><th>\(x\)</th><th>\(f(x)\)</th></tr></thead><tbody><tr><td>\(0\)</td><td>\(0\)</td></tr><tr><td>\(1\)</td><td>\(-2\)</td></tr><tr><td>\(2\)</td><td>\(-6\)</td></tr></tbody></table>Quelle est l'image de la fonction \(f\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="12" data-val="A">
+            <input type="radio" name="q12" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(]{-\infty},\,0[\)</span>
+          </label>
+          <label class="choix-label" data-q="12" data-val="B">
+            <input type="radio" name="q12" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(]{-\infty},\,2[\)</span>
+          </label>
+          <label class="choix-label" data-q="12" data-val="C">
+            <input type="radio" name="q12" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(]0,\,{+\infty}[\)</span>
+          </label>
+          <label class="choix-label" data-q="12" data-val="D">
+            <input type="radio" name="q12" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(]2,\,{+\infty}[\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-13" data-num="13">
+    <div class="q-numero">Question 13 <span class="q-theme"></span></div>
+    <div class="q-texte">La règle de la fonction \(f\) est \(f(x)=2\tan\!\left(\dfrac{\pi}{6}(x+2)\right)+1\).<br>Laquelle des équations suivantes représente une asymptote de \(f\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="13" data-val="A">
+            <input type="radio" name="q13" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(x=-10\)</span>
+          </label>
+          <label class="choix-label" data-q="13" data-val="B">
+            <input type="radio" name="q13" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(x=-4\)</span>
+          </label>
+          <label class="choix-label" data-q="13" data-val="C">
+            <input type="radio" name="q13" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(x=6\)</span>
+          </label>
+          <label class="choix-label" data-q="13" data-val="D">
+            <input type="radio" name="q13" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(x=7\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-14" data-num="14">
+    <div class="q-numero">Question 14 <span class="q-theme"></span></div>
+    <div class="q-texte">La fonction sinusoïdale \(f\) est négative sur tout son domaine et \(\min f = -6\).<br>Laquelle des règles suivantes peut être celle de \(f\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="14" data-val="A">
+            <input type="radio" name="q14" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(f(x)=4\sin x - 2\)</span>
+          </label>
+          <label class="choix-label" data-q="14" data-val="B">
+            <input type="radio" name="q14" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(f(x)=8\sin x + 2\)</span>
+          </label>
+          <label class="choix-label" data-q="14" data-val="C">
+            <input type="radio" name="q14" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(f(x)=2\sin x - 8\)</span>
+          </label>
+          <label class="choix-label" data-q="14" data-val="D">
+            <input type="radio" name="q14" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(f(x)=2\sin x - 4\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-15" data-num="15">
+    <div class="q-numero">Question 15 <span class="q-theme"></span></div>
+    <div class="q-texte">La règle de la fonction \(f\) est \(f(x)=4\log_2(-x-2)-8\).<br>Sur quel intervalle la fonction \(f\) est-elle négative&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="15" data-val="A">
+            <input type="radio" name="q15" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(x \in\,]{-\infty},\,-6]\)</span>
+          </label>
+          <label class="choix-label" data-q="15" data-val="B">
+            <input type="radio" name="q15" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(x \in\,]{-\infty},\,-2[\)</span>
+          </label>
+          <label class="choix-label" data-q="15" data-val="C">
+            <input type="radio" name="q15" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(x \in [-6,\,-2[\)</span>
+          </label>
+          <label class="choix-label" data-q="15" data-val="D">
+            <input type="radio" name="q15" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(x \in\,]{-2},\,6]\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-16" data-num="16">
+    <div class="q-numero">Question 16 <span class="q-theme"></span></div>
+    <div class="q-texte">Table de valeurs de la fonction valeur absolue \(f\)&nbsp;:<table class="table-valeurs"><thead><tr><th>\(x\)</th><th>\(f(x)\)</th></tr></thead><tbody><tr><td>\(0\)</td><td>\(0\)</td></tr><tr><td>\(6\)</td><td>\(0\)</td></tr><tr><td>\(7\)</td><td>\(-2\)</td></tr></tbody></table>Quel est le maximum de la fonction \(f\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="16" data-val="A">
+            <input type="radio" name="q16" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(-3\)</span>
+          </label>
+          <label class="choix-label" data-q="16" data-val="B">
+            <input type="radio" name="q16" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(3\)</span>
+          </label>
+          <label class="choix-label" data-q="16" data-val="C">
+            <input type="radio" name="q16" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(6\)</span>
+          </label>
+          <label class="choix-label" data-q="16" data-val="D">
+            <input type="radio" name="q16" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(9\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-17" data-num="17">
+    <div class="q-numero">Question 17 <span class="q-theme"></span></div>
+    <div class="q-texte">L'équation d'une parabole est \(y^2 = -16x - 32\).<br>Quelle est l'équation de la directrice&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="17" data-val="A">
+            <input type="radio" name="q17" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(x=-6\)</span>
+          </label>
+          <label class="choix-label" data-q="17" data-val="B">
+            <input type="radio" name="q17" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(x=-2\)</span>
+          </label>
+          <label class="choix-label" data-q="17" data-val="C">
+            <input type="radio" name="q17" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(x=2\)</span>
+          </label>
+          <label class="choix-label" data-q="17" data-val="D">
+            <input type="radio" name="q17" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(x=8\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-18" data-num="18">
+    <div class="q-numero">Question 18 <span class="q-theme"></span></div>
+    <div class="q-texte">L'équation d'une hyperbole est \(\dfrac{x^2}{16}-\dfrac{y^2}{49}=1\).<br>Laquelle des équations suivantes représente une asymptote&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="18" data-val="A">
+            <input type="radio" name="q18" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(y=-\dfrac{16}{49}x\)</span>
+          </label>
+          <label class="choix-label" data-q="18" data-val="B">
+            <input type="radio" name="q18" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(y=-\dfrac{49}{16}x\)</span>
+          </label>
+          <label class="choix-label" data-q="18" data-val="C">
+            <input type="radio" name="q18" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(y=\dfrac{7}{4}x\)</span>
+          </label>
+          <label class="choix-label" data-q="18" data-val="D">
+            <input type="radio" name="q18" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(y=\dfrac{4}{7}x\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-19" data-num="19">
+    <div class="q-numero">Question 19 <span class="q-theme"></span></div>
+    <div class="q-texte">Composantes&nbsp;: \(\vec{u}=(-1,-1)\), \(\vec{v}=(-3,6)\), \(\vec{w}=(4,-8)\).<br>Laquelle des affirmations suivantes est vraie&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="19" data-val="A">
+            <input type="radio" name="q19" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(\vec{u}\) est unitaire</span>
+          </label>
+          <label class="choix-label" data-q="19" data-val="B">
+            <input type="radio" name="q19" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(\|\vec{v}\|=7\)</span>
+          </label>
+          <label class="choix-label" data-q="19" data-val="C">
+            <input type="radio" name="q19" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(\vec{v}\) et \(\vec{w}\) sont orthogonaux</span>
+          </label>
+          <label class="choix-label" data-q="19" data-val="D">
+            <input type="radio" name="q19" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(\vec{v}\) et \(\vec{w}\) sont colinéaires</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-20" data-num="20">
+    <div class="q-numero">Question 20 <span class="q-theme"></span></div>
+    <div class="q-texte">\(\vec{u}=(-1,2)\), \(\vec{v}=(-4,6)\), \(\vec{w}=\vec{v}-\vec{u}\).<br>Quelle est la norme du vecteur \(\vec{w}\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="20" data-val="A">
+            <input type="radio" name="q20" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(4\) unités</span>
+          </label>
+          <label class="choix-label" data-q="20" data-val="B">
+            <input type="radio" name="q20" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(5\) unités</span>
+          </label>
+          <label class="choix-label" data-q="20" data-val="C">
+            <input type="radio" name="q20" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(6\) unités</span>
+          </label>
+          <label class="choix-label" data-q="20" data-val="D">
+            <input type="radio" name="q20" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(7\) unités</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-21" data-num="21">
+    <div class="q-numero">Question 21 <span class="q-theme"></span></div>
+    <div class="q-texte">\(f(x)=2\sqrt{-x+2}\), \(g(x)=-4x+6\), \(h(x)=(f\circ g)(x)\).<br>Quel est le domaine de la fonction \(h\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="21" data-val="A">
+            <input type="radio" name="q21" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(]{-\infty},\,4]\)</span>
+          </label>
+          <label class="choix-label" data-q="21" data-val="B">
+            <input type="radio" name="q21" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(]{-\infty},\,1]\)</span>
+          </label>
+          <label class="choix-label" data-q="21" data-val="C">
+            <input type="radio" name="q21" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\([1,\,{+\infty}[\)</span>
+          </label>
+          <label class="choix-label" data-q="21" data-val="D">
+            <input type="radio" name="q21" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\([4,\,{+\infty}[\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-22" data-num="22">
+    <div class="q-numero">Question 22 <span class="q-theme"></span></div>
+    <div class="q-texte">La règle de \(f\) est \(f(x)=a\log_2 x + k\).<table class="table-valeurs"><thead><tr><th>\(x\)</th><th>\(f(x)\)</th></tr></thead><tbody><tr><td>\(4\)</td><td>\(15\)</td></tr><tr><td>\(64\)</td><td>\(35\)</td></tr></tbody></table>Quel est le zéro de la fonction \(f\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="22" data-val="A">
+            <input type="radio" name="q22" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(-2\)</span>
+          </label>
+          <label class="choix-label" data-q="22" data-val="B">
+            <input type="radio" name="q22" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(-\dfrac{1}{2}\)</span>
+          </label>
+          <label class="choix-label" data-q="22" data-val="C">
+            <input type="radio" name="q22" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(\dfrac{1}{2}\)</span>
+          </label>
+          <label class="choix-label" data-q="22" data-val="D">
+            <input type="radio" name="q22" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(2\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-23" data-num="23">
+    <div class="q-numero">Question 23 <span class="q-theme"></span></div>
+    <div class="q-texte">La règle de \(f\) est \(f(x)=2\tan\!\left(\dfrac{\pi}{8}x\right)+2\).<br>Combien de zéros la fonction \(f\) a-t-elle dans \(x\in[30,\,50]\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="23" data-val="A">
+            <input type="radio" name="q23" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(2\)</span>
+          </label>
+          <label class="choix-label" data-q="23" data-val="B">
+            <input type="radio" name="q23" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(3\)</span>
+          </label>
+          <label class="choix-label" data-q="23" data-val="C">
+            <input type="radio" name="q23" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(4\)</span>
+          </label>
+          <label class="choix-label" data-q="23" data-val="D">
+            <input type="radio" name="q23" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(5\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-24" data-num="24">
+    <div class="q-numero">Question 24 <span class="q-theme"></span></div>
+    <div class="q-texte">La fonction rationnelle \(f\) vérifie&nbsp;: \(\text{dom}\,f=]{-\infty},2[\cup]2,{+\infty}[\), \(f(12)=4\), valeur initiale \(= -8\).<br>Quelle est l'image de \(f\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="24" data-val="A">
+            <input type="radio" name="q24" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(]{-\infty},-2[\cup]-2,{+\infty}[\)</span>
+          </label>
+          <label class="choix-label" data-q="24" data-val="B">
+            <input type="radio" name="q24" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(]{-\infty},-1[\cup]-1,{+\infty}[\)</span>
+          </label>
+          <label class="choix-label" data-q="24" data-val="C">
+            <input type="radio" name="q24" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(]{-\infty},1[\cup]1,{+\infty}[\)</span>
+          </label>
+          <label class="choix-label" data-q="24" data-val="D">
+            <input type="radio" name="q24" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(]{-\infty},2[\cup]2,{+\infty}[\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-25" data-num="25">
+    <div class="q-numero">Question 25 <span class="q-theme"></span></div>
+    <div class="q-texte">L'équation d'une ellipse est \(\dfrac{x^2}{169}+\dfrac{y^2}{25}=1\). Les foyers sont sur un cercle centré à l'origine.<br>Quelle est l'équation de ce cercle&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="25" data-val="A">
+            <input type="radio" name="q25" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(x^2+y^2=12\)</span>
+          </label>
+          <label class="choix-label" data-q="25" data-val="B">
+            <input type="radio" name="q25" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(x^2+y^2=14\)</span>
+          </label>
+          <label class="choix-label" data-q="25" data-val="C">
+            <input type="radio" name="q25" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(x^2+y^2=144\)</span>
+          </label>
+          <label class="choix-label" data-q="25" data-val="D">
+            <input type="radio" name="q25" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(x^2+y^2=194\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-26" data-num="26">
+    <div class="q-numero">Question 26 <span class="q-theme"></span></div>
+    <div class="q-texte">L'équation d'un cercle est \(x^2+y^2=324\).<br>Quelle est la mesure du diamètre&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="26" data-val="A">
+            <input type="radio" name="q26" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(18\) unités</span>
+          </label>
+          <label class="choix-label" data-q="26" data-val="B">
+            <input type="radio" name="q26" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(36\) unités</span>
+          </label>
+          <label class="choix-label" data-q="26" data-val="C">
+            <input type="radio" name="q26" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(162\) unités</span>
+          </label>
+          <label class="choix-label" data-q="26" data-val="D">
+            <input type="radio" name="q26" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(324\) unités</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-27" data-num="27">
+    <div class="q-numero">Question 27 <span class="q-theme"></span></div>
+    <div class="q-texte">La règle de \(f\) est \(f(x)=\begin{cases}\tfrac{1}{2}|x+3|+2 & x\in[-7,-1]\\ |x-1|+1 & x\in[-1,8]\end{cases}\).<br>Laquelle des affirmations est vraie&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="27" data-val="A">
+            <input type="radio" name="q27" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(\min f = 2\)</span>
+          </label>
+          <label class="choix-label" data-q="27" data-val="B">
+            <input type="radio" name="q27" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(\max f = 8\)</span>
+          </label>
+          <label class="choix-label" data-q="27" data-val="C">
+            <input type="radio" name="q27" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(f(0)=\tfrac{7}{2}\)</span>
+          </label>
+          <label class="choix-label" data-q="27" data-val="D">
+            <input type="radio" name="q27" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(f(-1)=-1\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-28" data-num="28">
+    <div class="q-numero">Question 28 <span class="q-theme"></span></div>
+    <div class="q-texte">Le triangle PQR est rectangle en R et \(\sin(m\angle QPR)=\dfrac{5}{13}\).<br>Quelle est la valeur de \(\tan(m\angle PQR)\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="28" data-val="A">
+            <input type="radio" name="q28" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(\dfrac{5}{12}\)</span>
+          </label>
+          <label class="choix-label" data-q="28" data-val="B">
+            <input type="radio" name="q28" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(\dfrac{12}{5}\)</span>
+          </label>
+          <label class="choix-label" data-q="28" data-val="C">
+            <input type="radio" name="q28" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(\dfrac{13}{12}\)</span>
+          </label>
+          <label class="choix-label" data-q="28" data-val="D">
+            <input type="radio" name="q28" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(\dfrac{12}{13}\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-29" data-num="29">
+    <div class="q-numero">Question 29 <span class="q-theme"></span></div>
+    <div class="q-texte">La règle de \(f\) est \(f(x)=-2\sqrt{-9x+81}+216\).<br>Laquelle des affirmations est vraie&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="29" data-val="A">
+            <input type="radio" name="q29" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(\text{dom}\,f=[9,{+\infty}[\)</span>
+          </label>
+          <label class="choix-label" data-q="29" data-val="B">
+            <input type="radio" name="q29" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(\text{ima}\,f=[216,{+\infty}[\)</span>
+          </label>
+          <label class="choix-label" data-q="29" data-val="C">
+            <input type="radio" name="q29" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">La valeur initiale de \(f\) est \(234\)</span>
+          </label>
+          <label class="choix-label" data-q="29" data-val="D">
+            <input type="radio" name="q29" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">Le zéro de \(f\) est \(-1287\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-30" data-num="30">
+    <div class="q-numero">Question 30 <span class="q-theme"></span></div>
+    <div class="q-texte">La règle de \(f\) est \(f(x)=\log_2 x + 2\).<br>Quelle est la règle de la réciproque&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="30" data-val="A">
+            <input type="radio" name="q30" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(f^{-1}(x)=\tfrac{1}{4}(2)^x\)</span>
+          </label>
+          <label class="choix-label" data-q="30" data-val="B">
+            <input type="radio" name="q30" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(f^{-1}(x)=\tfrac{1}{2}(2)^x\)</span>
+          </label>
+          <label class="choix-label" data-q="30" data-val="C">
+            <input type="radio" name="q30" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(f^{-1}(x)=2(2)^x\)</span>
+          </label>
+          <label class="choix-label" data-q="30" data-val="D">
+            <input type="radio" name="q30" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(f^{-1}(x)=4(2)^x\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-31" data-num="31">
+    <div class="q-numero">Question 31 <span class="q-theme"></span></div>
+    <div class="q-texte">Les deux équations suivantes ont une solution commune&nbsp;: \(\log(x^2-3x+90)=2\) et \(2^{2-x}=16\).<br>Quelle est cette solution commune&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="31" data-val="A">
+            <input type="radio" name="q31" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(-5\)</span>
+          </label>
+          <label class="choix-label" data-q="31" data-val="B">
+            <input type="radio" name="q31" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(-2\)</span>
+          </label>
+          <label class="choix-label" data-q="31" data-val="C">
+            <input type="radio" name="q31" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(2\)</span>
+          </label>
+          <label class="choix-label" data-q="31" data-val="D">
+            <input type="radio" name="q31" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(5\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-32" data-num="32">
+    <div class="q-numero">Question 32 <span class="q-theme"></span></div>
+    <div class="q-texte">Quelles sont les solutions de l'inéquation \(\dfrac{20}{x+4}-3\geq 1\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="32" data-val="A">
+            <input type="radio" name="q32" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(x\in\,]{-4},{+\infty}]\)</span>
+          </label>
+          <label class="choix-label" data-q="32" data-val="B">
+            <input type="radio" name="q32" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(x\in\,]{-4},\,1]\)</span>
+          </label>
+          <label class="choix-label" data-q="32" data-val="C">
+            <input type="radio" name="q32" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(x\in [1,{+\infty}[\)</span>
+          </label>
+          <label class="choix-label" data-q="32" data-val="D">
+            <input type="radio" name="q32" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(x\in\,]1,\,3]\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-33" data-num="33">
+    <div class="q-numero">Question 33 <span class="q-theme"></span></div>
+    <div class="q-texte">Une parabole a pour foyer \(F(0,2)\) et pour directrice \(y=0\).<br>Quelle est son équation&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="33" data-val="A">
+            <input type="radio" name="q33" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(y^2=-4(x-1)\)</span>
+          </label>
+          <label class="choix-label" data-q="33" data-val="B">
+            <input type="radio" name="q33" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(y^2=4(x-1)\)</span>
+          </label>
+          <label class="choix-label" data-q="33" data-val="C">
+            <input type="radio" name="q33" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(x^2=-4(y-1)\)</span>
+          </label>
+          <label class="choix-label" data-q="33" data-val="D">
+            <input type="radio" name="q33" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(x^2=4(y-1)\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-34" data-num="34">
+    <div class="q-numero">Question 34 <span class="q-theme"></span></div>
+    <div class="q-texte">Quelles sont les solutions de l'inéquation \(2\sqrt{-(x-4)}-8\geq -6\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="34" data-val="A">
+            <input type="radio" name="q34" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(x\in\,]{-\infty},\,3]\)</span>
+          </label>
+          <label class="choix-label" data-q="34" data-val="B">
+            <input type="radio" name="q34" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(x\in\,]{-\infty},\,4]\)</span>
+          </label>
+          <label class="choix-label" data-q="34" data-val="C">
+            <input type="radio" name="q34" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(x\in [3,\,4]\)</span>
+          </label>
+          <label class="choix-label" data-q="34" data-val="D">
+            <input type="radio" name="q34" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(x\in [3,\,6]\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-35" data-num="35">
+    <div class="q-numero">Question 35 <span class="q-theme"></span></div>
+    <div class="q-texte">Dans le rectangle ABCD, le segment BD est une diagonale. <em>(Voir figure ci-dessous)</em><br><svg viewBox='0 0 340 180' width='300' height='158' style='margin:10px auto;display:block'>
+  <!-- Rectangle -->
+  <rect x='30' y='20' width='280' height='140' fill='none' stroke='#333' stroke-width='2'/>
+  <!-- Diagonale D→B -->
+  <line x1='30' y1='160' x2='310' y2='20' stroke='#333' stroke-width='2'/>
+  <!-- Étiquettes : A haut gauche, B haut droite, C bas droite, D bas gauche -->
+  <text x='14' y='18' font-size='15' font-family='serif' fill='#111'>A</text>
+  <text x='314' y='18' font-size='15' font-family='serif' fill='#111'>B</text>
+  <text x='314' y='175' font-size='15' font-family='serif' fill='#111'>C</text>
+  <text x='14' y='175' font-size='15' font-family='serif' fill='#111'>D</text>
+</svg>Laquelle des affirmations suivantes est vraie&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="35" data-val="A">
+            <input type="radio" name="q35" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(\overrightarrow{AB}=\overrightarrow{CD}\)</span>
+          </label>
+          <label class="choix-label" data-q="35" data-val="B">
+            <input type="radio" name="q35" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(\overrightarrow{DA}+\overrightarrow{AB}=\overrightarrow{BD}\)</span>
+          </label>
+          <label class="choix-label" data-q="35" data-val="C">
+            <input type="radio" name="q35" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(\overrightarrow{DB}+\overrightarrow{BC}=\overrightarrow{AB}\)</span>
+          </label>
+          <label class="choix-label" data-q="35" data-val="D">
+            <input type="radio" name="q35" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(\overrightarrow{AD}-\overrightarrow{CB}=\vec{0}\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-36" data-num="36">
+    <div class="q-numero">Question 36 <span class="q-theme"></span></div>
+    <div class="q-texte">La fonction exponentielle \(f(x)=a(2)^x+k\) vérifie \(f(0)=13\) et \(f^{-1}(28)=2\).<br>Quelle est l'équation de l'asymptote&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="36" data-val="A">
+            <input type="radio" name="q36" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(y=3\)</span>
+          </label>
+          <label class="choix-label" data-q="36" data-val="B">
+            <input type="radio" name="q36" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(y=5\)</span>
+          </label>
+          <label class="choix-label" data-q="36" data-val="C">
+            <input type="radio" name="q36" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(y=8\)</span>
+          </label>
+          <label class="choix-label" data-q="36" data-val="D">
+            <input type="radio" name="q36" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(y=13\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-37" data-num="37">
+    <div class="q-numero">Question 37 <span class="q-theme"></span></div>
+    <div class="q-texte">La règle de \(f\) est \(f(x)=-|x+8|+8\).<br>Quels sont les zéros de \(f\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="37" data-val="A">
+            <input type="radio" name="q37" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(-16\) et \(0\)</span>
+          </label>
+          <label class="choix-label" data-q="37" data-val="B">
+            <input type="radio" name="q37" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(-16\) et \(8\)</span>
+          </label>
+          <label class="choix-label" data-q="37" data-val="C">
+            <input type="radio" name="q37" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(0\) et \(8\)</span>
+          </label>
+          <label class="choix-label" data-q="37" data-val="D">
+            <input type="radio" name="q37" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(0\) et \(16\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-38" data-num="38">
+    <div class="q-numero">Question 38 <span class="q-theme"></span></div>
+    <div class="q-texte">Laquelle des expressions suivantes est équivalente à \(\log\dfrac{100x^2}{y}\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="38" data-val="A">
+            <input type="radio" name="q38" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(\log x - \log y + 2\)</span>
+          </label>
+          <label class="choix-label" data-q="38" data-val="B">
+            <input type="radio" name="q38" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(\log x + \log y + 2\)</span>
+          </label>
+          <label class="choix-label" data-q="38" data-val="C">
+            <input type="radio" name="q38" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(2\log x - \log y + 2\)</span>
+          </label>
+          <label class="choix-label" data-q="38" data-val="D">
+            <input type="radio" name="q38" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(\log x - 2\log y + 2\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-39" data-num="39">
+    <div class="q-numero">Question 39 <span class="q-theme"></span></div>
+    <div class="q-texte">La règle de \(f\) est \(f(x)=a\sqrt{x-h}+k\) avec \(a<0\), \(h>0\), \(k>0\).<br>Laquelle des affirmations est vraie&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="39" data-val="A">
+            <input type="radio" name="q39" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">La valeur initiale de \(f\) est positive</span>
+          </label>
+          <label class="choix-label" data-q="39" data-val="B">
+            <input type="radio" name="q39" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">Le zéro de \(f\) est négatif</span>
+          </label>
+          <label class="choix-label" data-q="39" data-val="C">
+            <input type="radio" name="q39" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(\text{dom}\,f=]{-\infty},h]\)</span>
+          </label>
+          <label class="choix-label" data-q="39" data-val="D">
+            <input type="radio" name="q39" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(\text{ima}\,f=]{-\infty},k]\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-40" data-num="40">
+    <div class="q-numero">Question 40 <span class="q-theme"></span></div>
+    <div class="q-texte">La fonction exponentielle \(f\) vérifie \(\text{ima}\,f=]{-\infty},6[\) et valeur initiale \(= 4\).<br>Laquelle des règles peut être celle de \(f\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="40" data-val="A">
+            <input type="radio" name="q40" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(f(x)=-(2)^x+6\)</span>
+          </label>
+          <label class="choix-label" data-q="40" data-val="B">
+            <input type="radio" name="q40" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(f(x)=-2(2)^x+6\)</span>
+          </label>
+          <label class="choix-label" data-q="40" data-val="C">
+            <input type="radio" name="q40" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(f(x)=(2)^x+4\)</span>
+          </label>
+          <label class="choix-label" data-q="40" data-val="D">
+            <input type="radio" name="q40" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(f(x)=(2)^x+6\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-41" data-num="41">
+    <div class="q-numero">Question 41 <span class="q-theme"></span></div>
+    <div class="q-texte">\(\vec{u}=(2,3)\), \(\vec{v}=(5,-1)\), \(\vec{w}=a\vec{u}+b\vec{v}=(40,9)\).<br>Quelle est la valeur de \(a\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="41" data-val="A">
+            <input type="radio" name="q41" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(3\)</span>
+          </label>
+          <label class="choix-label" data-q="41" data-val="B">
+            <input type="radio" name="q41" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(4\)</span>
+          </label>
+          <label class="choix-label" data-q="41" data-val="C">
+            <input type="radio" name="q41" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(5\)</span>
+          </label>
+          <label class="choix-label" data-q="41" data-val="D">
+            <input type="radio" name="q41" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(6\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-42" data-num="42">
+    <div class="q-numero">Question 42 <span class="q-theme"></span></div>
+    <div class="q-texte">\(\vec{u}=(1,10)\), \(\vec{v}=(-4,5)\), \(\vec{w}=2\vec{v}-3\vec{u}\).<br>Quel est le produit scalaire de \(\vec{v}\) et \(\vec{w}\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="42" data-val="A">
+            <input type="radio" name="q42" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(-144\)</span>
+          </label>
+          <label class="choix-label" data-q="42" data-val="B">
+            <input type="radio" name="q42" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(-56\)</span>
+          </label>
+          <label class="choix-label" data-q="42" data-val="C">
+            <input type="radio" name="q42" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(56\)</span>
+          </label>
+          <label class="choix-label" data-q="42" data-val="D">
+            <input type="radio" name="q42" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(144\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-43" data-num="43">
+    <div class="q-numero">Question 43 <span class="q-theme"></span></div>
+    <div class="q-texte">Un cercle centré à l'origine passe par \(P(4,-3)\).<svg viewBox='-7 -7 14 14' width='200' height='200' style='display:block;margin:10px auto'>
+  <!-- Axes -->
+  <line x1='-7' y1='0' x2='6.5' y2='0' stroke='#888' stroke-width='0.12'/>
+  <polygon points='6.5,0 6.1,0.18 6.1,-0.18' fill='#888'/>
+  <line x1='0' y1='7' x2='0' y2='-6.5' stroke='#888' stroke-width='0.12'/>
+  <polygon points='0,-6.5 0.18,-6.1 -0.18,-6.1' fill='#888'/>
+  <!-- Cercle rempli (rayon 5) -->
+  <circle cx='0' cy='0' r='5' fill='#c8c8c8' stroke='#111' stroke-width='0.18'/>
+  <!-- Axes par-dessus -->
+  <line x1='-7' y1='0' x2='6.5' y2='0' stroke='#888' stroke-width='0.12'/>
+  <line x1='0' y1='7' x2='0' y2='-6.5' stroke='#888' stroke-width='0.12'/>
+  <!-- Point P(4,-3) -->
+  <circle cx='4' cy='3' r='0.15' fill='#111'/>
+  <text x='4.25' y='3.6' font-size='0.7' font-family='serif' fill='#111'>(4, -3)</text>
+</svg>Laquelle des inéquations décrit le cercle et sa région intérieure&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="43" data-val="A">
+            <input type="radio" name="q43" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(x^2+y^2\leq 5\)</span>
+          </label>
+          <label class="choix-label" data-q="43" data-val="B">
+            <input type="radio" name="q43" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(x^2+y^2\geq 5\)</span>
+          </label>
+          <label class="choix-label" data-q="43" data-val="C">
+            <input type="radio" name="q43" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(x^2+y^2\leq 25\)</span>
+          </label>
+          <label class="choix-label" data-q="43" data-val="D">
+            <input type="radio" name="q43" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(x^2+y^2\geq 25\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-44" data-num="44">
+    <div class="q-numero">Question 44 <span class="q-theme"></span></div>
+    <div class="q-texte">La règle de \(f\) est \(f(x)=\log(-x+2)\).<br>Quel est le domaine de \(f\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="44" data-val="A">
+            <input type="radio" name="q44" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(]{-\infty},-2[\)</span>
+          </label>
+          <label class="choix-label" data-q="44" data-val="B">
+            <input type="radio" name="q44" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(]{-\infty},2[\)</span>
+          </label>
+          <label class="choix-label" data-q="44" data-val="C">
+            <input type="radio" name="q44" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(]{-2},{+\infty}[\)</span>
+          </label>
+          <label class="choix-label" data-q="44" data-val="D">
+            <input type="radio" name="q44" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(]2,{+\infty}[\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-45" data-num="45">
+    <div class="q-numero">Question 45 <span class="q-theme"></span></div>
+    <div class="q-texte">La norme de \(\vec{u}\) est 100, celle de \(\vec{v}\) est 32, et leur produit scalaire est \(-1600\).<br>Quelle est la mesure de l'angle entre ces vecteurs&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="45" data-val="A">
+            <input type="radio" name="q45" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(60°\)</span>
+          </label>
+          <label class="choix-label" data-q="45" data-val="B">
+            <input type="radio" name="q45" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(90°\)</span>
+          </label>
+          <label class="choix-label" data-q="45" data-val="C">
+            <input type="radio" name="q45" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(120°\)</span>
+          </label>
+          <label class="choix-label" data-q="45" data-val="D">
+            <input type="radio" name="q45" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(180°\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-46" data-num="46">
+    <div class="q-numero">Question 46 <span class="q-theme"></span></div>
+    <div class="q-texte">À quel rapport trigonométrique l'expression \(\left(\dfrac{\tan\theta}{\sin\theta}-\cos\theta\right)\times\csc\theta\) est-elle équivalente&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="46" data-val="A">
+            <input type="radio" name="q46" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(\sin\theta\)</span>
+          </label>
+          <label class="choix-label" data-q="46" data-val="B">
+            <input type="radio" name="q46" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(\cos\theta\)</span>
+          </label>
+          <label class="choix-label" data-q="46" data-val="C">
+            <input type="radio" name="q46" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(\tan\theta\)</span>
+          </label>
+          <label class="choix-label" data-q="46" data-val="D">
+            <input type="radio" name="q46" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(\cot\theta\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-47" data-num="47">
+    <div class="q-numero">Question 47 <span class="q-theme"></span></div>
+    <div class="q-texte">La fonction racine carrée \(f\) n'a pas de zéro et est négative sur tout son domaine.<br>Laquelle des règles peut être celle de \(f\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="47" data-val="A">
+            <input type="radio" name="q47" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(f(x)=-2\sqrt{x}\)</span>
+          </label>
+          <label class="choix-label" data-q="47" data-val="B">
+            <input type="radio" name="q47" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(f(x)=-2\sqrt{-x}\)</span>
+          </label>
+          <label class="choix-label" data-q="47" data-val="C">
+            <input type="radio" name="q47" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(f(x)=2\sqrt{x}+1\)</span>
+          </label>
+          <label class="choix-label" data-q="47" data-val="D">
+            <input type="radio" name="q47" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(f(x)=-2\sqrt{x}-1\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-48" data-num="48">
+    <div class="q-numero">Question 48 <span class="q-theme"></span></div>
+    <div class="q-texte">Quelle est la valeur de \(\sec\!\left(\dfrac{19\pi}{3}\right)-\sin\!\left(\dfrac{3\pi}{2}\right)\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="48" data-val="A">
+            <input type="radio" name="q48" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(\dfrac{1}{2}\)</span>
+          </label>
+          <label class="choix-label" data-q="48" data-val="B">
+            <input type="radio" name="q48" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(1\)</span>
+          </label>
+          <label class="choix-label" data-q="48" data-val="C">
+            <input type="radio" name="q48" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(2\)</span>
+          </label>
+          <label class="choix-label" data-q="48" data-val="D">
+            <input type="radio" name="q48" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(3\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-49" data-num="49">
+    <div class="q-numero">Question 49 <span class="q-theme"></span></div>
+    <div class="q-texte">Quelles sont les solutions de l'inéquation \(|x-4|+|2x-8|+9<18\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="49" data-val="A">
+            <input type="radio" name="q49" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(x\in\mathbb{R}\)</span>
+          </label>
+          <label class="choix-label" data-q="49" data-val="B">
+            <input type="radio" name="q49" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(x\in\,]{-7},7[\)</span>
+          </label>
+          <label class="choix-label" data-q="49" data-val="C">
+            <input type="radio" name="q49" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(x\in\,]1,7[\)</span>
+          </label>
+          <label class="choix-label" data-q="49" data-val="D">
+            <input type="radio" name="q49" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(x\in\,]{-\infty},1[\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-50" data-num="50">
+    <div class="q-numero">Question 50 <span class="q-theme"></span></div>
+    <div class="q-texte">Une hyperbole centrée à l'origine a ses sommets sur l'axe des \(x\), la distance entre les sommets est 20 et une asymptote est \(y=\tfrac{1}{5}x\).<br>Quelle est son équation&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="50" data-val="A">
+            <input type="radio" name="q50" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(\dfrac{x^2}{100}-\dfrac{y^2}{4}=1\)</span>
+          </label>
+          <label class="choix-label" data-q="50" data-val="B">
+            <input type="radio" name="q50" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(\dfrac{x^2}{4}-\dfrac{y^2}{100}=1\)</span>
+          </label>
+          <label class="choix-label" data-q="50" data-val="C">
+            <input type="radio" name="q50" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(\dfrac{x^2}{10}+\dfrac{y^2}{2}=1\)</span>
+          </label>
+          <label class="choix-label" data-q="50" data-val="D">
+            <input type="radio" name="q50" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(\dfrac{x^2}{2}+\dfrac{y^2}{10}=1\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-51" data-num="51">
+    <div class="q-numero">Question 51 <span class="q-theme"></span></div>
+    <div class="q-texte">La fonction rationnelle \(f\) a son intersection d'asymptotes en \((-4,4)\) et \(f(0)=0\).<br>Quelle est la règle de \(f\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="51" data-val="A">
+            <input type="radio" name="q51" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(f(x)=\dfrac{4x}{x+4}\)</span>
+          </label>
+          <label class="choix-label" data-q="51" data-val="B">
+            <input type="radio" name="q51" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(f(x)=\dfrac{4x}{x-4}\)</span>
+          </label>
+          <label class="choix-label" data-q="51" data-val="C">
+            <input type="radio" name="q51" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(f(x)=\dfrac{-4x}{x+4}\)</span>
+          </label>
+          <label class="choix-label" data-q="51" data-val="D">
+            <input type="radio" name="q51" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(f(x)=\dfrac{-4x}{x-4}\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-52" data-num="52">
+    <div class="q-numero">Question 52 <span class="q-theme"></span></div>
+    <div class="q-texte">La fonction \(f(x)=a\sqrt{x-h}-2\) a pour valeur initiale \(6\) et \(f(20)=10\).<br>Quel est le zéro de \(f\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="52" data-val="A">
+            <input type="radio" name="q52" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(-15\)</span>
+          </label>
+          <label class="choix-label" data-q="52" data-val="B">
+            <input type="radio" name="q52" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(-8\)</span>
+          </label>
+          <label class="choix-label" data-q="52" data-val="C">
+            <input type="radio" name="q52" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(17\)</span>
+          </label>
+          <label class="choix-label" data-q="52" data-val="D">
+            <input type="radio" name="q52" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(24\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-53" data-num="53">
+    <div class="q-numero">Question 53 <span class="q-theme"></span></div>
+    <div class="q-texte">\(f(x)=2\sqrt{x+4}-1\), \(g(x)=-3\sqrt{4x+16}-2\), \(h(x)=(f-g)(x)\).<br>Quelle est l'image de \(h\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="53" data-val="A">
+            <input type="radio" name="q53" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(]{-\infty},-3]\)</span>
+          </label>
+          <label class="choix-label" data-q="53" data-val="B">
+            <input type="radio" name="q53" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(]{-\infty},1]\)</span>
+          </label>
+          <label class="choix-label" data-q="53" data-val="C">
+            <input type="radio" name="q53" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\([-3,{+\infty}[\)</span>
+          </label>
+          <label class="choix-label" data-q="53" data-val="D">
+            <input type="radio" name="q53" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\([1,{+\infty}[\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-54" data-num="54">
+    <div class="q-numero">Question 54 <span class="q-theme"></span></div>
+    <div class="q-texte">La règle de \(f\) est \(f(x)=a(c)^x+1\).<table class="table-valeurs"><thead><tr><th>\(x\)</th><th>\(f(x)\)</th></tr></thead><tbody><tr><td>\(0\)</td><td>\(-1\)</td></tr><tr><td>\(2\)</td><td>\(-127\)</td></tr></tbody></table>Quel est le zéro de \(f\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="54" data-val="A">
+            <input type="radio" name="q54" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(-3\)</span>
+          </label>
+          <label class="choix-label" data-q="54" data-val="B">
+            <input type="radio" name="q54" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(-\dfrac{1}{3}\)</span>
+          </label>
+          <label class="choix-label" data-q="54" data-val="C">
+            <input type="radio" name="q54" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(\dfrac{1}{3}\)</span>
+          </label>
+          <label class="choix-label" data-q="54" data-val="D">
+            <input type="radio" name="q54" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(3\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-55" data-num="55">
+    <div class="q-numero">Question 55 <span class="q-theme"></span></div>
+    <div class="q-texte">Système d'inéquations&nbsp;: \(x>2\), \(x+y\leq 10\), \(y-2x\geq 1\).<br>Lequel des points suivants appartient à la région-solution&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="55" data-val="A">
+            <input type="radio" name="q55" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(P(2,6)\)</span>
+          </label>
+          <label class="choix-label" data-q="55" data-val="B">
+            <input type="radio" name="q55" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(Q(3,6)\)</span>
+          </label>
+          <label class="choix-label" data-q="55" data-val="C">
+            <input type="radio" name="q55" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(R(3,7)\)</span>
+          </label>
+          <label class="choix-label" data-q="55" data-val="D">
+            <input type="radio" name="q55" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(S(6,2)\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-56" data-num="56">
+    <div class="q-numero">Question 56 <span class="q-theme"></span></div>
+    <div class="q-texte">Le cercle \(x^2+y^2=25\) et la droite \(x+y+1=0\).<br>Quelles sont les coordonnées des points d'intersection&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="56" data-val="A">
+            <input type="radio" name="q56" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\((-4,3)\) et \((3,-4)\)</span>
+          </label>
+          <label class="choix-label" data-q="56" data-val="B">
+            <input type="radio" name="q56" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\((-4,3)\) et \((4,-3)\)</span>
+          </label>
+          <label class="choix-label" data-q="56" data-val="C">
+            <input type="radio" name="q56" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\((-3,4)\) et \((3,-4)\)</span>
+          </label>
+          <label class="choix-label" data-q="56" data-val="D">
+            <input type="radio" name="q56" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\((-3,4)\) et \((4,-3)\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-57" data-num="57">
+    <div class="q-numero">Question 57 <span class="q-theme"></span></div>
+    <div class="q-texte">La règle de \(f\) est \(f(x)=\begin{cases}-\sqrt{x+4}+4 & x\in[-4,5]\\ |x-7|-1 & x\in[5,9]\end{cases}\).<br>Laquelle des affirmations est vraie&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="57" data-val="A">
+            <input type="radio" name="q57" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(\max f = -4\)</span>
+          </label>
+          <label class="choix-label" data-q="57" data-val="B">
+            <input type="radio" name="q57" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">La fonction est négative sur \([5,8]\)</span>
+          </label>
+          <label class="choix-label" data-q="57" data-val="C">
+            <input type="radio" name="q57" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(\text{dom}\,f=[-4,9[\)</span>
+          </label>
+          <label class="choix-label" data-q="57" data-val="D">
+            <input type="radio" name="q57" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(\text{ima}\,f=[-1,4]\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-58" data-num="58">
+    <div class="q-numero">Question 58 <span class="q-theme"></span></div>
+    <div class="q-texte">\(f(x)=\tan\!\left(\dfrac{\pi}{8}x\right)+1\). La fonction sinusoïdale \(g\) a la même période que \(f\) et \(\text{ima}\,g=[2,4]\).<br>Laquelle des règles peut être celle de \(g\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="58" data-val="A">
+            <input type="radio" name="q58" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(g(x)=\sin\!\left(\dfrac{\pi}{8}x\right)+1\)</span>
+          </label>
+          <label class="choix-label" data-q="58" data-val="B">
+            <input type="radio" name="q58" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(g(x)=\sin\!\left(\dfrac{\pi}{8}x\right)+3\)</span>
+          </label>
+          <label class="choix-label" data-q="58" data-val="C">
+            <input type="radio" name="q58" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(g(x)=\sin\!\left(\dfrac{\pi}{4}x\right)+1\)</span>
+          </label>
+          <label class="choix-label" data-q="58" data-val="D">
+            <input type="radio" name="q58" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(g(x)=\sin\!\left(\dfrac{\pi}{4}x\right)+3\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-59" data-num="59">
+    <div class="q-numero">Question 59 <span class="q-theme"></span></div>
+    <div class="q-texte">La règle de \(f\) est \(f(x)=\dfrac{2x+34}{x+2}\).<br>Laquelle des affirmations est vraie&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="59" data-val="A">
+            <input type="radio" name="q59" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(\text{dom}\,f=]{-\infty},2[\cup]2,{+\infty}[\)</span>
+          </label>
+          <label class="choix-label" data-q="59" data-val="B">
+            <input type="radio" name="q59" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(\text{ima}\,f=]{-\infty},-2[\cup]-2,{+\infty}[\)</span>
+          </label>
+          <label class="choix-label" data-q="59" data-val="C">
+            <input type="radio" name="q59" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(f^{-1}(17)=1\)</span>
+          </label>
+          <label class="choix-label" data-q="59" data-val="D">
+            <input type="radio" name="q59" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(f^{-1}(8)=3\)</span>
+          </label>
+    </div>
+  </div>
+  <div class="question-slide" id="slide-60" data-num="60">
+    <div class="q-numero">Question 60 <span class="q-theme"></span></div>
+    <div class="q-texte">La fonction tangente \(f(x)=a\tan(bx)\) a deux zéros consécutifs en \(8\) et \(16\), et \(f(2)=2\).<br>Quelle est la règle de \(f\)&nbsp;?</div>
+    <div class="choix-groupe">
+          <label class="choix-label" data-q="60" data-val="A">
+            <input type="radio" name="q60" value="0" class="choix-radio">
+            <span class="choix-lettre">A</span>
+            <span class="choix-texte">\(f(x)=-2\tan\!\left(\dfrac{\pi}{16}x\right)\)</span>
+          </label>
+          <label class="choix-label" data-q="60" data-val="B">
+            <input type="radio" name="q60" value="1" class="choix-radio">
+            <span class="choix-lettre">B</span>
+            <span class="choix-texte">\(f(x)=-2\tan\!\left(\dfrac{\pi}{8}x\right)\)</span>
+          </label>
+          <label class="choix-label" data-q="60" data-val="C">
+            <input type="radio" name="q60" value="2" class="choix-radio">
+            <span class="choix-lettre">C</span>
+            <span class="choix-texte">\(f(x)=2\tan\!\left(\dfrac{\pi}{8}x\right)\)</span>
+          </label>
+          <label class="choix-label" data-q="60" data-val="D">
+            <input type="radio" name="q60" value="3" class="choix-radio">
+            <span class="choix-lettre">D</span>
+            <span class="choix-texte">\(f(x)=2\tan\!\left(\dfrac{\pi}{16}x\right)\)</span>
+          </label>
+    </div>
+  </div>  </div>
+
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-quiz">
+    <button class="btn btn-secondaire" id="btn-precedent" onclick="allerA(courant-1)">← Précédente</button>
+    <div class="nav-compteur">Question <strong id="nav-num">1</strong> sur <strong>60</strong></div>
+    <button class="btn btn-secondaire" id="btn-suivant" onclick="allerA(courant+1)">Suivante →</button>
+  </div>
+
+  <!-- Zone soumission -->
+  <div class="zone-soumettre">
+    <p>Tu as répondu à <span class="cpt-rep" id="cpt-rep">0</span> question(s) sur 60.</p>
+    <div id="msg-err-quiz" class="msg-erreur" style="text-align:left"></div>
+    <button class="btn btn-soumettre" id="btn-soumettre" onclick="soumettre()">Soumettre mes réponses ✓</button>
+  </div>
+</div>
+
+<!-- ===== ÉCRAN 3 : RÉSULTATS ===== -->
+<div class="ecran" id="ecran-resultats">
+  <div style="max-width:680px;margin:0 auto;padding:0 16px">
+    <div class="carte" id="carte-resultats">
+      <div style="text-align:center;padding:24px;color:var(--texte-sec)">Envoi en cours…</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzJJdB22SgheHH62--rtaTZL1pMLRCFGJy6S9QbQ4qx47qnh8akqhFkIk2ktAkaOU3eoA/exec';
+const TOTAL = 60;
+
+// État de session (en mémoire seulement — pas de localStorage)
+// ============================================================
+// ÉTAT SESSION
+// ============================================================
+let session = { id:'', courriel:'', nom:'', groupe:'' };
+let courant = 1;
+
+// ============================================================
+// BASCULE ONGLETS
+// ============================================================
+function basculerOnglet(onglet) {
+  ['connexion','creation'].forEach(o => {
+    document.getElementById('contenu-' + o).classList.toggle('actif', o === onglet);
+    document.getElementById('onglet-' + o).classList.toggle('actif', o === onglet);
+  });
+  document.getElementById('msg-err-id').classList.remove('visible');
+  document.getElementById('msg-ok-id').style.display = 'none';
+}
+
+// ============================================================
+// UTILITAIRE — afficher/masquer mot de passe
+// ============================================================
+function toggleOeil(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁';
+  }
+}
+
+// ============================================================
+// FORCE DU MOT DE PASSE
+// ============================================================
+function evaluerMdp(val) {
+  let score = 0;
+  if (val.length >= 6)  score++;
+  if (val.length >= 10) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+
+  const barre  = document.getElementById('force-barre');
+  const texte  = document.getElementById('force-texte');
+  const pct    = Math.min(score / 4 * 100, 100);
+  const couleurs = ['#ef4444','#f97316','#eab308','#22c55e'];
+  const labels   = ['Trop court','Faible','Correct','Fort'];
+  const idx      = Math.min(Math.floor(score / 1.2), 3);
+
+  barre.style.width      = pct + '%';
+  barre.style.background = couleurs[idx];
+  texte.textContent      = val.length ? labels[idx] : '';
+  texte.style.color      = couleurs[idx];
+}
+
+// ============================================================
+// HASH SHA-256 (Web Crypto API)
+// ============================================================
+async function sha256(message) {
+  const msgBuffer  = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray  = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ============================================================
+// CONNEXION
+// ============================================================
+async function seConnecter() {
+  const btn    = document.getElementById('btn-connexion');
+  const errDiv = document.getElementById('msg-err-id');
+  const id     = document.getElementById('co-id').value.trim();
+  const mdp    = document.getElementById('co-mdp').value;
+
+  errDiv.classList.remove('visible');
+  if (!id)  { afficherErreur(errDiv, 'Entre ton numéro de fiche.'); return; }
+  if (!mdp) { afficherErreur(errDiv, 'Entre ton mot de passe.'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Vérification…';
+
+  try {
+    const hash = await sha256(mdp);
+    const data = await post({ action: 'seConnecter', id, hash });
+
+    if (data.erreur) {
+      afficherErreur(errDiv, data.erreur);
+    } else {
+      session.id     = id;
+      session.nom    = data.nom;
+      session.groupe = data.groupe;
+      lancerQuiz();
+    }
+  } catch(e) {
+    afficherErreur(errDiv, 'Erreur de connexion. Vérifie ta connexion internet.');
+  }
+  btn.disabled = false;
+  btn.textContent = 'Se connecter →';
+}
+
+// ============================================================
+// CRÉATION — ÉTAPE 1 : vérifier id + courriel
+// ============================================================
+async function creerStep1() {
+  const btn      = document.getElementById('btn-cr-step1');
+  const errDiv   = document.getElementById('msg-err-id');
+  const id       = document.getElementById('cr-id').value.trim();
+  const courriel = document.getElementById('cr-courriel').value.trim();
+
+  errDiv.classList.remove('visible');
+  if (!id)       { afficherErreur(errDiv, 'Entre ton numéro de fiche.'); return; }
+  if (!courriel) { afficherErreur(errDiv, 'Entre ton adresse courriel.'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Vérification…';
+
+  try {
+    const data = await post({ action: 'verifierNouvelEleve', id, courriel });
+
+    if (data.erreur) {
+      afficherErreur(errDiv, data.erreur);
+    } else {
+      session.id      = id;
+      session.courriel = courriel;
+      // Passer à l'étape 2
+      document.getElementById('cr-step1').classList.remove('actif');
+      document.getElementById('cr-step2').classList.add('actif');
+      document.getElementById('cdot-1').classList.add('done');
+      document.getElementById('cdot-2').classList.add('actif');
+      document.getElementById('clabel-step').textContent = 'Étape 2 sur 2';
+      document.getElementById('cr-nom').focus();
+    }
+  } catch(e) {
+    afficherErreur(errDiv, 'Erreur de connexion. Vérifie ta connexion internet.');
+  }
+  btn.disabled = false;
+  btn.textContent = 'Continuer →';
+}
+
+// ============================================================
+// CRÉATION — ÉTAPE 2 : nom + code + mot de passe
+// ============================================================
+async function creerStep2() {
+  const btn    = document.getElementById('btn-cr-step2');
+  const errDiv = document.getElementById('msg-err-id');
+  const nom    = document.getElementById('cr-nom').value.trim();
+  const code   = document.getElementById('cr-code').value.trim().toUpperCase();
+  const mdp1   = document.getElementById('cr-mdp1').value;
+  const mdp2   = document.getElementById('cr-mdp2').value;
+
+  errDiv.classList.remove('visible');
+  if (!nom)          { afficherErreur(errDiv, "Entre ton nom d'affichage."); return; }
+  if (!code)         { afficherErreur(errDiv, 'Entre le code de classe.'); return; }
+  if (mdp1.length < 6) { afficherErreur(errDiv, 'Le mot de passe doit avoir au moins 6 caractères.'); return; }
+  if (mdp1 !== mdp2) { afficherErreur(errDiv, 'Les deux mots de passe ne correspondent pas.'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Création en cours…';
+
+  try {
+    const hash = await sha256(mdp1);
+    const data = await post({
+      action:    'creerCompte',
+      id:        session.id,
+      courriel:  session.courriel,
+      nom,
+      code_acces: code,
+      hash
+    });
+
+    if (data.erreur) {
+      afficherErreur(errDiv, data.erreur);
+    } else {
+      session.nom    = nom;
+      session.groupe = data.groupe;
+      lancerQuiz();
+    }
+  } catch(e) {
+    afficherErreur(errDiv, 'Erreur de connexion. Réessaie.');
+  }
+  btn.disabled = false;
+  btn.textContent = 'Créer mon compte →';
+}
+
+// ============================================================
+// LANCER LE QUIZ
+// ============================================================
+function lancerQuiz() {
+  document.getElementById('entete-eleve').textContent =
+    session.nom + ' — Gr. ' + session.groupe;
+  afficherEcran('ecran-quiz');
+  construireGrille();
+  melangerChoix();
+  // Charger le brouillon après le mélange (les values sont déjà les index originaux)
+  chargerBrouillon().then(premiereNonRepondue => allerA(premiereNonRepondue || 1));
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function allerA(n) {
+  if (n < 1 || n > TOTAL) return;
+
+  // Sauvegarder le brouillon avant de naviguer (si question courante répondue)
+  const repCourante = document.querySelector(`input[name="q${courant}"]:checked`);
+  if (repCourante) sauvegarderBrouillon();
+
+  document.querySelectorAll('.question-slide').forEach(s => s.classList.remove('active'));
+  const slide = document.getElementById('slide-' + n);
+  slide.classList.add('active');
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise([slide]).catch(()=>{});
+  }
+  courant = n;
+  document.getElementById('nav-num').textContent = n;
+  document.getElementById('btn-precedent').disabled = (n === 1);
+  document.getElementById('btn-suivant').disabled   = (n === TOTAL);
+  mettreAJourGrille();
+  mettreAJourBarre();
+  mettreAJourCompteur();
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+// Raccourcis clavier
+document.addEventListener('keydown', function(e) {
+  if (!document.getElementById('ecran-quiz').classList.contains('actif')) return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') allerA(courant + 1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   allerA(courant - 1);
+});
+
+// ============================================================
+// GRILLE
+// ============================================================
+function construireGrille() {
+  const cont = document.getElementById('grille-entete-boutons');
+  cont.innerHTML = '';
+  for (let i = 1; i <= TOTAL; i++) {
+    const b = document.createElement('button');
+    b.className = 'grille-entete-btn';
+    b.id = 'gb-' + i;
+    b.textContent = i;
+    b.onclick = () => allerA(i);
+    cont.appendChild(b);
+  }
+  // Afficher la grille dans l'entête et ajuster le padding
+  document.getElementById('grille-entete').style.display = 'block';
+  document.querySelector('.entete').classList.add('quiz-actif');
+  document.querySelector('.entete').style.paddingBottom = '0';
+}
+
+function mettreAJourGrille() {
+  for (let i = 1; i <= TOTAL; i++) {
+    const btn = document.getElementById('gb-' + i);
+    if (!btn) continue;
+    btn.className = 'grille-entete-btn';
+    if (document.querySelector(`input[name="q${i}"]:checked`)) btn.classList.add('repondu');
+    if (i === courant) btn.classList.add('actuel');
+  }
+}
+
+// ============================================================
+// BARRE & COMPTEUR
+// ============================================================
+function mettreAJourBarre() {
+  document.getElementById('barre').style.width = (nbReponses() / TOTAL * 100) + '%';
+}
+function mettreAJourCompteur() {
+  document.getElementById('cpt-rep').textContent = nbReponses();
+}
+function nbReponses() {
+  let n = 0;
+  for (let i = 1; i <= TOTAL; i++) {
+    if (document.querySelector(`input[name="q${i}"]:checked`)) n++;
+  }
+  return n;
+}
+
+document.addEventListener('change', function(e) {
+  if (e.target.classList.contains('choix-radio')) {
+    mettreAJourGrille();
+    mettreAJourBarre();
+    mettreAJourCompteur();
+  }
+});
+
+// ============================================================
+// SOUMISSION
+// ============================================================
+async function soumettre() {
+  const errDiv = document.getElementById('msg-err-quiz');
+  const nb     = nbReponses();
+
+  if (nb < TOTAL) {
+    const manquantes = [];
+    for (let i = 1; i <= TOTAL; i++) {
+      if (!document.querySelector(`input[name="q${i}"]:checked`)) manquantes.push(i);
+    }
+    afficherErreur(errDiv,
+      `${TOTAL - nb} question(s) sans réponse : ${manquantes.slice(0,12).join(', ')}${manquantes.length > 12 ? '…' : ''}`
+    );
+    return;
+  }
+
+  errDiv.classList.remove('visible');
+  const btn = document.getElementById('btn-soumettre');
+  btn.disabled = true;
+  btn.textContent = 'Envoi en cours…';
+
+  const reponses = [];
+  for (let i = 1; i <= TOTAL; i++) {
+    const r = document.querySelector(`input[name="q${i}"]:checked`);
+    // r.value contient l'index original (0-3) assigné lors du mélange
+    reponses.push(r ? parseInt(r.value) : -1);
+  }
+
+  try {
+    const data = await post({
+      action:   'soumettre',
+      id: session.id,
+      courriel: session.courriel,
+      nom:      session.nom,
+      groupe:   session.groupe,
+      reponses
+    });
+
+    if (data.succes) {
+      afficherResultats(data);
+    } else {
+      afficherErreur(errDiv, data.erreur || 'Erreur lors de la soumission.');
+      btn.disabled = false;
+      btn.textContent = 'Soumettre mes réponses ✓';
+    }
+  } catch(e) {
+    afficherErreur(errDiv, 'Erreur de connexion. Réessaie.');
+    btn.disabled = false;
+    btn.textContent = 'Soumettre mes réponses ✓';
+  }
+}
+
+// ============================================================
+// AFFICHAGE RÉSULTATS
+// ============================================================
+function afficherResultats(data) {
+  afficherEcran('ecran-resultats');
+  const pct     = data.pourcentage;
+  const couleur = pct >= 80 ? '#2a7a3b' : pct >= 60 ? '#b45309' : '#b91c1c';
+  const msg     = pct >= 80 ? 'Excellent travail !' : pct >= 60 ? 'Bon effort !' : 'Continue à pratiquer !';
+
+  let themesHTML = '';
+  for (const [theme, v] of Object.entries(data.scoresThemes)) {
+    const p = Math.round(v.bon / v.total * 100);
+    const c = p >= 70 ? '#2a7a3b' : '#b45309';
+    themesHTML += `
+      <div class="theme-item">
+        <div class="theme-nom">${theme}</div>
+        <div class="theme-score" style="color:${c}">${v.bon}/${v.total} (${p}%)</div>
+        <div class="barre-theme"><div class="barre-theme-inner" style="width:${p}%;background:${c}"></div></div>
+      </div>`;
+  }
+
+  document.getElementById('carte-resultats').innerHTML = `
+    <div style="text-align:center;margin-bottom:24px">
+      <div class="score-cercle" style="border-color:${couleur};background:${couleur}18">
+        <div class="score-num" style="color:${couleur}">${data.score}</div>
+        <div class="score-den">sur 60</div>
+      </div>
+      <div style="font-size:1.5rem;font-weight:700;color:${couleur};margin-bottom:4px">${pct}%</div>
+      <div style="font-size:.95rem;color:#555;margin-bottom:8px">${msg}</div>
+      <div style="font-size:.85rem;color:#888">${data.nom} — Groupe ${data.groupe}</div>
+      <div class="fiche-info">Fiche n° ${data.id}</div>
+    </div>
+    <hr style="border:none;border-top:1.5px solid #eee;margin:20px 0">
+    <div style="font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#888;margin-bottom:12px">Résultats par thème</div>
+    <div class="themes-grille">${themesHTML}</div>
+    <div style="text-align:center;margin-top:24px;font-size:.82rem;color:#aaa">
+      Tes résultats ont été enregistrés.<br>Tu peux fermer cette fenêtre.
+    </div>
+  `;
+
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise([document.getElementById('carte-resultats')]).catch(()=>{});
+  }
+}
+
+// ============================================================
+// UTILITAIRES
+// ============================================================
+function afficherEcran(id) {
+  document.querySelectorAll('.ecran').forEach(e => e.classList.remove('actif'));
+  document.getElementById(id).classList.add('actif');
+  window.scrollTo({ top:0 });
+}
+
+function afficherErreur(div, msg) {
+  div.textContent = msg;
+  div.classList.add('visible');
+}
+
+async function post(payload) {
+  const rep = await fetch(APPS_SCRIPT_URL, {
+    method:  'POST',
+    body:    JSON.stringify(payload)
+  });
+  return rep.json();
+}
+
+
+// ============================================================
+// BROUILLON — sauvegarde et restauration
+// ============================================================
+function collecterReponses() {
+  const reponses = [];
+  for (let i = 1; i <= TOTAL; i++) {
+    const r = document.querySelector(`input[name="q${i}"]:checked`);
+    reponses.push(r ? parseInt(r.value) : -1);
+  }
+  return reponses;
+}
+
+async function sauvegarderBrouillon() {
+  try {
+    await post({
+      action:   'sauvegarderBrouillon',
+      id:       session.id,
+      reponses: collecterReponses()
+    });
+  } catch(e) {
+    // Silencieux — ne pas déranger l'élève pour une sauvegarde ratée
+  }
+}
+
+async function chargerBrouillon() {
+  try {
+    const data = await post({ action: 'chargerBrouillon', id: session.id });
+    if (data.succes && data.reponses) {
+      let nbRestaurees = 0;
+      for (let i = 0; i < data.reponses.length; i++) {
+        const val = data.reponses[i];
+        if (val >= 0 && val <= 3) {
+          // Trouver le radio avec cet index original dans la question i+1
+          // Après mélange, la value du radio = index original
+          const radio = document.querySelector(
+            `input[name="q${i+1}"][value="${val}"]`
+          );
+          if (radio) {
+            radio.checked = true;
+            nbRestaurees++;
+          }
+        }
+      }
+      if (nbRestaurees > 0) {
+        const banner = document.getElementById('banner-restauration');
+        if (banner) {
+          banner.textContent = `✓ ${nbRestaurees} réponse(s) restaurée(s) depuis ta dernière session.`;
+          banner.style.display = 'block';
+          setTimeout(() => { banner.style.display = 'none'; }, 4000);
+        }
+        mettreAJourGrille();
+        mettreAJourBarre();
+        mettreAJourCompteur();
+
+        // Aller à la première question sans réponse
+        let premiereNonRepondue = TOTAL; // par défaut la dernière
+        for (let i = 1; i <= TOTAL; i++) {
+          if (!document.querySelector(`input[name="q${i}"]:checked`)) {
+            premiereNonRepondue = i;
+            break;
+          }
+        }
+        return premiereNonRepondue;
+      }
+    }
+  } catch(e) {
+    // Silencieux
+  }
+}
+
+// ============================================================
+// MÉLANGE DES CHOIX — Fisher-Yates
+// Pour chaque question, on mélange les 4 choix à l'affichage
+// mais on retient l'index original (0-3) de chaque choix
+// ============================================================
+
+// Stocke pour chaque question le mapping : index affiché → index original
+// Ex: choixMapping[5] = [2, 0, 3, 1] signifie que le 1er choix affiché
+// de la Q5 correspond au choix original d'index 2
+const choixMapping = {};
+
+function melangerChoix() {
+  for (let q = 1; q <= TOTAL; q++) {
+    const labels = Array.from(
+      document.querySelectorAll(`.choix-label[data-q="${q}"]`)
+    );
+    if (!labels.length) continue;
+
+    const groupe = labels[0].closest('.choix-groupe');
+    const n = labels.length;
+
+    // Indices originaux dans l'ordre actuel (0, 1, 2, 3)
+    const indices = labels.map((_, i) => i);
+
+    // Fisher-Yates
+    for (let i = n - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+
+    // choixMapping[q][position affichée] = index original
+    choixMapping[q] = indices;
+
+    // Réordonner les labels dans le DOM
+    indices.forEach(origIdx => {
+      groupe.appendChild(labels[origIdx]);
+    });
+
+    // Mettre à jour les valeurs des radios : value = index original
+    // (indépendamment de la lettre A/B/C/D affichée)
+    const labelsApres = Array.from(
+      document.querySelectorAll(`.choix-label[data-q="${q}"]`)
+    );
+    labelsApres.forEach((label, pos) => {
+      const radio = label.querySelector('.choix-radio');
+      // La value du radio = index original du choix à cette position
+      radio.value = choixMapping[q][pos];
+      // Mettre à jour la lettre affichée
+      const lettreEl = label.querySelector('.choix-lettre');
+      if (lettreEl) lettreEl.textContent = ['A','B','C','D'][pos];
+    });
+  }
+}
+
+// Entrée clavier — connexion
+document.getElementById('co-id')?.addEventListener('keydown', e => { if (e.key === 'Enter') seConnecter(); });
+document.getElementById('co-mdp')?.addEventListener('keydown', e => { if (e.key === 'Enter') seConnecter(); });
+// Entrée clavier — création
+document.getElementById('cr-id')?.addEventListener('keydown', e => { if (e.key === 'Enter') creerStep1(); });
+document.getElementById('cr-courriel')?.addEventListener('keydown', e => { if (e.key === 'Enter') creerStep1(); });
+document.getElementById('cr-nom')?.addEventListener('keydown', e => { if (e.key === 'Enter') creerStep2(); });
+document.getElementById('cr-code')?.addEventListener('input', function() { this.value = this.value.toUpperCase(); });
+document.getElementById('cr-code')?.addEventListener('keydown', e => { if (e.key === 'Enter') creerStep2(); });
+document.getElementById('cr-mdp2')?.addEventListener('keydown', e => { if (e.key === 'Enter') creerStep2(); });
+</script>
+</body>
+</html>
