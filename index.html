@@ -2611,10 +2611,11 @@ async function confirmerSoumission() {
   try {
     const data = await post({
       action:   'soumettre',
-      id: session.id,
+      id:       session.id,
       courriel: session.courriel,
       nom:      session.nom,
       groupe:   session.groupe,
+      tentative,
       reponses
     });
 
