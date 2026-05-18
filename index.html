@@ -310,6 +310,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   gap: 10px;
   justify-content: flex-end;
 }
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -325,8 +326,15 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
 </div>
 <div class="barre-prog"><div class="barre-prog-inner" id="barre"></div></div>
 
+<div class="ecran actif" id="ecran-chargement" style="display:flex;align-items:center;justify-content:center;min-height:100vh">
+  <div style="text-align:center;color:var(--texte-sec)">
+    <div style="width:40px;height:40px;border:4px solid var(--gris-bord);border-top-color:var(--bleu);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px"></div>
+    <div style="font-size:.9rem">Connexion en cours…</div>
+  </div>
+</div>
+
 <!-- ===== ÉCRAN 1 : IDENTIFICATION ===== -->
-<div class="ecran actif" id="ecran-id">
+<div class="ecran" id="ecran-id">
   <div class="carte-section">
     <div class="carte">
       <h1 style="margin-bottom:20px">Quiz — Mathématiques SN 5<sup>e</sup></h1>
@@ -2885,10 +2893,18 @@ document.getElementById('cr-mdp2')?.addEventListener('keydown', e => { if (e.key
 (async function reconnexionAuto() {
   const id   = localStorage.getItem('quiz_id');
   const hash = localStorage.getItem('quiz_hash');
-  if (!id || !hash) return;
+  if (!id || !hash) {
+    afficherEcran('ecran-id');
+    return;
+  }
   try {
     const data = await post({ action: 'seConnecter', id, hash });
-    if (!data.succes) { localStorage.removeItem('quiz_id'); localStorage.removeItem('quiz_hash'); return; }
+    if (!data.succes) {
+      localStorage.removeItem('quiz_id');
+      localStorage.removeItem('quiz_hash');
+      afficherEcran('ecran-id');
+      return;
+    }
     session.id     = id;
     session.nom    = data.nom;
     session.groupe = data.groupe;
@@ -2903,7 +2919,9 @@ document.getElementById('cr-mdp2')?.addEventListener('keydown', e => { if (e.key
     } else {
       lancerQuiz();
     }
-  } catch(e) { /* silencieux */ }
+  } catch(e) {
+    afficherEcran('ecran-id');
+  }
 })();
 </script>
 
