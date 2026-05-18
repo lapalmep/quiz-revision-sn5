@@ -206,6 +206,110 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   font-style: italic;
   font-weight: normal;
 }
+
+/* LISTE À PUCES DANS LES QUESTIONS */
+.q-liste {
+  margin: 8px 0 12px 20px;
+  padding: 0;
+  line-height: 1.8;
+}
+.q-liste li {
+  margin-bottom: 2px;
+}
+
+/* GRILLE HORIZONTALE POUR ITEMS CÔTE À CÔTE */
+.q-grille {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 32px;
+  margin: 10px 0 14px;
+  align-items: center;
+}
+.q-grille-item {
+  font-size: .95rem;
+}
+
+/* ÉTATS APRÈS SOUMISSION */
+.grille-entete-btn.correct {
+  background: #22c55e;
+  border-color: #16a34a;
+  color: #fff;
+  cursor: default;
+  pointer-events: none;
+}
+.grille-entete-btn.faux {
+  background: #ef4444;
+  border-color: #dc2626;
+  color: #fff;
+  cursor: pointer;
+}
+.grille-entete-btn.faux-final {
+  background: #ef4444;
+  border-color: #dc2626;
+  color: #fff;
+  cursor: default;
+  pointer-events: none;
+}
+.grille-entete-btn.actuel {
+  outline: 3px solid #fff;
+  outline-offset: -3px;
+  font-weight: 800;
+  box-shadow: 0 0 0 2px #1a5fa8;
+}
+.choix-label.verrouillee {
+  opacity: .45;
+  cursor: default;
+  pointer-events: none;
+  background: var(--gris-bg) !important;
+  border-color: var(--gris-bord) !important;
+}
+.choix-label.verrouillee .choix-lettre {
+  background: var(--gris-bg) !important;
+  border-color: var(--gris-bord) !important;
+  color: var(--texte-sec) !important;
+}
+.choix-label.verrouillee:has(.choix-radio:checked) {
+  border-color: var(--gris-bord) !important;
+  background: var(--gris-bg) !important;
+}
+.choix-label.verrouillee:has(.choix-radio:checked) .choix-lettre {
+  background: var(--gris-bg) !important;
+  border-color: var(--gris-bord) !important;
+  color: var(--texte-sec) !important;
+}
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+}
+.modal-boite {
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px 24px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0,0,0,.2);
+}
+.modal-titre {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--bleu);
+  margin-bottom: 10px;
+}
+.modal-texte {
+  font-size: .9rem;
+  color: var(--texte-sec);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.modal-boutons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
 </style>
 </head>
 <body>
@@ -472,7 +576,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-6" data-num="6">
     <div class="q-numero">Question 6 <span class="q-theme"></span></div>
-    <div class="q-texte">Une ellipse centrée à l'origine possède&nbsp;: grand axe = 10 unités, petit axe = 4 unités, foyers sur l'axe des \(y\).<br>Quelle est l'équation de cette ellipse&nbsp;?</div>
+    <div class="q-texte">Une ellipse centrée à l'origine possède les caractéristiques suivantes&nbsp;:<ul class="q-liste"><li>Le grand axe mesure 10 unités.</li><li>Le petit axe mesure 4 unités.</li><li>Les foyers sont sur l'axe des \(y\).</li></ul>Quelle est l'équation de cette ellipse&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="6" data-val="A">
             <input type="radio" name="q6" value="0" class="choix-radio">
@@ -498,7 +602,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-7" data-num="7">
     <div class="q-numero">Question 7 <span class="q-theme"></span></div>
-    <div class="q-texte">Quelle est la valeur de l'expression \(\log_2 8 - \dfrac{\log 25 + \log 4}{2}\)&nbsp;?</div>
+    <div class="q-texte">Quelle est la valeur de l'expression \(\log_2 8 - (\log 25 + \log 4)^2\)&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="7" data-val="A">
             <input type="radio" name="q7" value="0" class="choix-radio">
@@ -680,7 +784,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-14" data-num="14">
     <div class="q-numero">Question 14 <span class="q-theme"></span></div>
-    <div class="q-texte">La fonction sinusoïdale \(f\) est négative sur tout son domaine et \(\min f = -6\).<br>Laquelle des règles suivantes peut être celle de \(f\)&nbsp;?</div>
+    <div class="q-texte">La fonction sinusoïdale \(f\) possède les caractéristiques suivantes&nbsp;:<ul class="q-liste"><li>Elle est négative sur tout son domaine.</li><li>\(\min f = -6\)</li></ul>Laquelle des règles suivantes peut être celle de \(f\)&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="14" data-val="A">
             <input type="radio" name="q14" value="0" class="choix-radio">
@@ -810,7 +914,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-19" data-num="19">
     <div class="q-numero">Question 19 <span class="q-theme"></span></div>
-    <div class="q-texte">Composantes&nbsp;: \(\vec{u}=(-1,-1)\), \(\vec{v}=(-3,6)\), \(\vec{w}=(4,-8)\).<br>Laquelle des affirmations suivantes est vraie&nbsp;?</div>
+    <div class="q-texte">Voici les composantes des vecteurs \(\vec{u}\), \(\vec{v}\) et \(\vec{w}\)&nbsp;:<div class="q-grille"><div class="q-grille-item">\(\vec{u}=(-1,-1)\)</div><div class="q-grille-item">\(\vec{v}=(-3,6)\)</div><div class="q-grille-item">\(\vec{w}=(4,-8)\)</div></div>Laquelle des affirmations suivantes est vraie&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="19" data-val="A">
             <input type="radio" name="q19" value="0" class="choix-radio">
@@ -836,7 +940,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-20" data-num="20">
     <div class="q-numero">Question 20 <span class="q-theme"></span></div>
-    <div class="q-texte">\(\vec{u}=(-1,2)\), \(\vec{v}=(-4,6)\), \(\vec{w}=\vec{v}-\vec{u}\).<br>Quelle est la norme du vecteur \(\vec{w}\)&nbsp;?</div>
+    <div class="q-texte">Voici de l'information sur les vecteurs \(\vec{u}\), \(\vec{v}\) et \(\vec{w}\)&nbsp;:<div class="q-grille"><div class="q-grille-item">\(\vec{u}=(-1,2)\)</div><div class="q-grille-item">\(\vec{v}=(-4,6)\)</div><div class="q-grille-item">\(\vec{w}=\vec{v}-\vec{u}\)</div></div>Quelle est la norme du vecteur \(\vec{w}\)&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="20" data-val="A">
             <input type="radio" name="q20" value="0" class="choix-radio">
@@ -862,7 +966,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-21" data-num="21">
     <div class="q-numero">Question 21 <span class="q-theme"></span></div>
-    <div class="q-texte">\(f(x)=2\sqrt{-x+2}\), \(g(x)=-4x+6\), \(h(x)=(f\circ g)(x)\).<br>Quel est le domaine de la fonction \(h\)&nbsp;?</div>
+    <div class="q-texte">Voici les règles des fonctions \(f\), \(g\) et \(h\)&nbsp;:<div class="q-grille"><div class="q-grille-item">\(f(x)=2\sqrt{-x+2}\)</div><div class="q-grille-item">\(g(x)=-4x+6\)</div><div class="q-grille-item">\(h(x)=(f\circ g)(x)\)</div></div>Quel est le domaine de la fonction \(h\)&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="21" data-val="A">
             <input type="radio" name="q21" value="0" class="choix-radio">
@@ -940,7 +1044,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-24" data-num="24">
     <div class="q-numero">Question 24 <span class="q-theme"></span></div>
-    <div class="q-texte">La fonction rationnelle \(f\) vérifie&nbsp;: \(\text{dom}\,f=]{-\infty},2[\cup]2,{+\infty}[\), \(f(12)=4\), valeur initiale \(= -8\).<br>Quelle est l'image de \(f\)&nbsp;?</div>
+    <div class="q-texte">La fonction rationnelle \(f\) possède les caractéristiques suivantes&nbsp;:<ul class="q-liste"><li>\(\text{dom}\,f=]{-\infty},2[\cup]2,{+\infty}[\)</li><li>\(f(12)=4\)</li><li>La valeur initiale de \(f\) est \(-8\)</li></ul>Quelle est l'image de \(f\)&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="24" data-val="A">
             <input type="radio" name="q24" value="0" class="choix-radio">
@@ -1122,7 +1226,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-31" data-num="31">
     <div class="q-numero">Question 31 <span class="q-theme"></span></div>
-    <div class="q-texte">Les deux équations suivantes ont une solution commune&nbsp;: \(\log(x^2-3x+90)=2\) et \(2^{2-x}=16\).<br>Quelle est cette solution commune&nbsp;?</div>
+    <div class="q-texte">Les deux équations suivantes ont une solution commune&nbsp;:<div class="q-grille"><div class="q-grille-item">\(\log(x^2-3x+90)=2\)</div><div class="q-grille-item">\(2^{2-x}=16\)</div></div>Quelle est cette solution commune&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="31" data-val="A">
             <input type="radio" name="q31" value="0" class="choix-radio">
@@ -1174,7 +1278,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-33" data-num="33">
     <div class="q-numero">Question 33 <span class="q-theme"></span></div>
-    <div class="q-texte">Une parabole a pour foyer \(F(0,2)\) et pour directrice \(y=0\).<br>Quelle est son équation&nbsp;?</div>
+    <div class="q-texte">Une parabole possède les caractéristiques suivantes&nbsp;:<ul class="q-liste"><li>Le foyer est \(F(0,2)\)</li><li>L'équation de la directrice est \(y=0\)</li></ul>Quelle est son équation&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="33" data-val="A">
             <input type="radio" name="q33" value="0" class="choix-radio">
@@ -1262,7 +1366,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-36" data-num="36">
     <div class="q-numero">Question 36 <span class="q-theme"></span></div>
-    <div class="q-texte">La fonction exponentielle \(f(x)=a(2)^x+k\) vérifie \(f(0)=13\) et \(f^{-1}(28)=2\).<br>Quelle est l'équation de l'asymptote&nbsp;?</div>
+    <div class="q-texte">La fonction exponentielle \(f\) possède les caractéristiques suivantes&nbsp;:<ul class="q-liste"><li>La règle est de la forme \(f(x)=a(2)^x+k\)</li><li>\(f(0)=13\)</li><li>\(f^{-1}(28)=2\)</li></ul>Quelle est l'équation de l'asymptote&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="36" data-val="A">
             <input type="radio" name="q36" value="0" class="choix-radio">
@@ -1366,7 +1470,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-40" data-num="40">
     <div class="q-numero">Question 40 <span class="q-theme"></span></div>
-    <div class="q-texte">La fonction exponentielle \(f\) vérifie \(\text{ima}\,f=]{-\infty},6[\) et valeur initiale \(= 4\).<br>Laquelle des règles peut être celle de \(f\)&nbsp;?</div>
+    <div class="q-texte">La fonction exponentielle \(f\) possède les caractéristiques suivantes&nbsp;:<ul class="q-liste"><li>\(\text{ima}\,f=]{-\infty},6[\)</li><li>La valeur initiale de \(f\) est \(4\)</li></ul>Laquelle des règles peut être celle de \(f\)&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="40" data-val="A">
             <input type="radio" name="q40" value="0" class="choix-radio">
@@ -1392,7 +1496,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-41" data-num="41">
     <div class="q-numero">Question 41 <span class="q-theme"></span></div>
-    <div class="q-texte">\(\vec{u}=(2,3)\), \(\vec{v}=(5,-1)\), \(\vec{w}=a\vec{u}+b\vec{v}=(40,9)\).<br>Quelle est la valeur de \(a\)&nbsp;?</div>
+    <div class="q-texte">Voici de l'information sur les vecteurs \(\vec{u}\), \(\vec{v}\) et \(\vec{w}\)&nbsp;:<div class="q-grille"><div class="q-grille-item">\(\vec{u}=(2,3)\)</div><div class="q-grille-item">\(\vec{v}=(5,-1)\)</div><div class="q-grille-item">\(\vec{w}=a\vec{u}+b\vec{v}=(40,9)\)</div></div>Quelle est la valeur de \(a\)&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="41" data-val="A">
             <input type="radio" name="q41" value="0" class="choix-radio">
@@ -1418,7 +1522,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-42" data-num="42">
     <div class="q-numero">Question 42 <span class="q-theme"></span></div>
-    <div class="q-texte">\(\vec{u}=(1,10)\), \(\vec{v}=(-4,5)\), \(\vec{w}=2\vec{v}-3\vec{u}\).<br>Quel est le produit scalaire de \(\vec{v}\) et \(\vec{w}\)&nbsp;?</div>
+    <div class="q-texte">Voici de l'information sur les vecteurs \(\vec{u}\), \(\vec{v}\) et \(\vec{w}\)&nbsp;:<div class="q-grille"><div class="q-grille-item">\(\vec{u}=(1,10)\)</div><div class="q-grille-item">\(\vec{v}=(-4,5)\)</div><div class="q-grille-item">\(\vec{w}=2\vec{v}-3\vec{u}\)</div></div>Quel est le produit scalaire de \(\vec{v}\) et \(\vec{w}\)&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="42" data-val="A">
             <input type="radio" name="q42" value="0" class="choix-radio">
@@ -1562,7 +1666,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-47" data-num="47">
     <div class="q-numero">Question 47 <span class="q-theme"></span></div>
-    <div class="q-texte">La fonction racine carrée \(f\) n'a pas de zéro et est négative sur tout son domaine.<br>Laquelle des règles peut être celle de \(f\)&nbsp;?</div>
+    <div class="q-texte">La fonction racine carrée \(f\) possède les caractéristiques suivantes&nbsp;:<ul class="q-liste"><li>Elle n'a pas de zéro.</li><li>Elle est négative sur tout son domaine.</li></ul>Laquelle des règles peut être celle de \(f\)&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="47" data-val="A">
             <input type="radio" name="q47" value="0" class="choix-radio">
@@ -1640,7 +1744,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-50" data-num="50">
     <div class="q-numero">Question 50 <span class="q-theme"></span></div>
-    <div class="q-texte">Une hyperbole centrée à l'origine a ses sommets sur l'axe des \(x\), la distance entre les sommets est 20 et une asymptote est \(y=\tfrac{1}{5}x\).<br>Quelle est son équation&nbsp;?</div>
+    <div class="q-texte">Une hyperbole centrée à l'origine possède les caractéristiques suivantes&nbsp;:<ul class="q-liste"><li>Les sommets sont sur l'axe des \(x\)</li><li>La distance entre les sommets est de 20 unités</li><li>L'équation d'une asymptote est \(y=\tfrac{1}{5}x\)</li></ul>Quelle est son équation&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="50" data-val="A">
             <input type="radio" name="q50" value="0" class="choix-radio">
@@ -1666,7 +1770,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-51" data-num="51">
     <div class="q-numero">Question 51 <span class="q-theme"></span></div>
-    <div class="q-texte">La fonction rationnelle \(f\) a son intersection d'asymptotes en \((-4,4)\) et \(f(0)=0\).<br>Quelle est la règle de \(f\)&nbsp;?</div>
+    <div class="q-texte">La fonction rationnelle \(f\) possède les caractéristiques suivantes&nbsp;:<ul class="q-liste"><li>Le point d'intersection des asymptotes est \((-4,4)\)</li><li>\(f(0)=0\)</li></ul>Quelle est la règle de \(f\)&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="51" data-val="A">
             <input type="radio" name="q51" value="0" class="choix-radio">
@@ -1692,7 +1796,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-52" data-num="52">
     <div class="q-numero">Question 52 <span class="q-theme"></span></div>
-    <div class="q-texte">La fonction \(f(x)=a\sqrt{x-h}-2\) a pour valeur initiale \(6\) et \(f(20)=10\).<br>Quel est le zéro de \(f\)&nbsp;?</div>
+    <div class="q-texte">La fonction racine carrée \(f\) possède les caractéristiques suivantes&nbsp;:<ul class="q-liste"><li>La règle est de la forme \(f(x)=a\sqrt{x-h}-2\)</li><li>La valeur initiale est \(6\)</li><li>\(f(20)=10\)</li></ul>Quel est le zéro de \(f\)&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="52" data-val="A">
             <input type="radio" name="q52" value="0" class="choix-radio">
@@ -1718,7 +1822,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-53" data-num="53">
     <div class="q-numero">Question 53 <span class="q-theme"></span></div>
-    <div class="q-texte">\(f(x)=2\sqrt{x+4}-1\), \(g(x)=-3\sqrt{4x+16}-2\), \(h(x)=(f-g)(x)\).<br>Quelle est l'image de \(h\)&nbsp;?</div>
+    <div class="q-texte">Voici les règles des fonctions \(f\), \(g\) et \(h\)&nbsp;:<div class="q-grille"><div class="q-grille-item">\(f(x)=2\sqrt{x+4}-1\)</div><div class="q-grille-item">\(g(x)=-3\sqrt{4x+16}-2\)</div><div class="q-grille-item">\(h(x)=(f-g)(x)\)</div></div>Quelle est l'image de \(h\)&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="53" data-val="A">
             <input type="radio" name="q53" value="0" class="choix-radio">
@@ -1770,7 +1874,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-55" data-num="55">
     <div class="q-numero">Question 55 <span class="q-theme"></span></div>
-    <div class="q-texte">Système d'inéquations&nbsp;: \(x>2\), \(x+y\leq 10\), \(y-2x\geq 1\).<br>Lequel des points suivants appartient à la région-solution&nbsp;?</div>
+    <div class="q-texte">Considérons le système d'inéquations suivant&nbsp;:<div class="q-grille"><div class="q-grille-item">\(x>2\)</div><div class="q-grille-item">\(x+y\leq 10\)</div><div class="q-grille-item">\(y-2x\geq 1\)</div></div>Lequel des points suivants appartient à la région-solution&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="55" data-val="A">
             <input type="radio" name="q55" value="0" class="choix-radio">
@@ -1796,7 +1900,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-56" data-num="56">
     <div class="q-numero">Question 56 <span class="q-theme"></span></div>
-    <div class="q-texte">Le cercle \(x^2+y^2=25\) et la droite \(x+y+1=0\).<br>Quelles sont les coordonnées des points d'intersection&nbsp;?</div>
+    <div class="q-texte">L'équation d'un cercle et d'une droite du plan cartésien sont respectivement&nbsp;:<div class="q-grille"><div class="q-grille-item">\(x^2+y^2=25\)</div><div class="q-grille-item">\(x+y+1=0\)</div></div>Quelles sont les coordonnées des points d'intersection&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="56" data-val="A">
             <input type="radio" name="q56" value="0" class="choix-radio">
@@ -1848,7 +1952,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-58" data-num="58">
     <div class="q-numero">Question 58 <span class="q-theme"></span></div>
-    <div class="q-texte">\(f(x)=\tan\!\left(\dfrac{\pi}{8}x\right)+1\). La fonction sinusoïdale \(g\) a la même période que \(f\) et \(\text{ima}\,g=[2,4]\).<br>Laquelle des règles peut être celle de \(g\)&nbsp;?</div>
+    <div class="q-texte">La règle de la fonction \(f\) est \(f(x)=\tan\!\left(\dfrac{\pi}{8}x\right)+1\).<br>La fonction sinusoïdale \(g\) possède les caractéristiques suivantes&nbsp;:<ul class="q-liste"><li>La période de la fonction \(g\) est la même que celle de la fonction \(f\).</li><li>\(\text{ima}\,g=[2,4]\)</li></ul>Laquelle des règles peut être celle de \(g\)&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="58" data-val="A">
             <input type="radio" name="q58" value="0" class="choix-radio">
@@ -1900,7 +2004,7 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
   </div>
   <div class="question-slide" id="slide-60" data-num="60">
     <div class="q-numero">Question 60 <span class="q-theme"></span></div>
-    <div class="q-texte">La fonction tangente \(f(x)=a\tan(bx)\) a deux zéros consécutifs en \(8\) et \(16\), et \(f(2)=2\).<br>Quelle est la règle de \(f\)&nbsp;?</div>
+    <div class="q-texte">La fonction tangente \(f\) possède les caractéristiques suivantes&nbsp;:<ul class="q-liste"><li>La règle est de la forme \(f(x)=a\tan(bx)\)</li><li>Deux zéros consécutifs sont \(8\) et \(16\)</li><li>\(f(2)=2\)</li></ul>Quelle est la règle de \(f\)&nbsp;?</div>
     <div class="choix-groupe">
           <label class="choix-label" data-q="60" data-val="A">
             <input type="radio" name="q60" value="0" class="choix-radio">
@@ -1929,9 +2033,9 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
 
   <!-- Navigation -->
   <div class="nav-quiz">
-    <button class="btn btn-secondaire" id="btn-precedent" onclick="allerA(courant-1)">← Précédente</button>
+    <button class="btn btn-secondaire" id="btn-precedent" onclick="naviguerCorrection(-1)">← Précédente</button>
     <div class="nav-compteur">Question <strong id="nav-num">1</strong> sur <strong>60</strong></div>
-    <button class="btn btn-secondaire" id="btn-suivant" onclick="allerA(courant+1)">Suivante →</button>
+    <button class="btn btn-secondaire" id="btn-suivant" onclick="naviguerCorrection(1)">Suivante →</button>
   </div>
 
   <!-- Zone soumission -->
@@ -1959,9 +2063,161 @@ const TOTAL = 60;
 // ============================================================
 // ÉTAT SESSION
 // ============================================================
-let session = { id:'', courriel:'', nom:'', groupe:'' };
-let courant = 1;
+let session  = { id:'', courriel:'', nom:'', groupe:'' };
+let courant  = 1;
+let tentative      = 1;    // 1 ou 2
+let questionsJustes = [];  // indices (1-60) des questions correctes après soumission
+let modeCorrection  = false; // true pendant la 2e tentative
 
+
+
+// ============================================================
+// ÉTATS DE RECONNEXION
+// ============================================================
+function lancerQuizApres1() {
+  // L'élève a soumis une fois — on lui montre l'écran résultats
+  // avec le bouton "Corriger mes erreurs"
+  document.getElementById('entete-eleve').textContent =
+    session.nom + ' — Gr. ' + session.groupe;
+  afficherEcran('ecran-resultats');
+  construireGrille();
+  melangerChoix();
+
+  // Mettre à jour la grille : vert/rouge
+  for (let i = 1; i <= TOTAL; i++) {
+    const btn = document.getElementById('gb-' + i);
+    if (!btn) continue;
+    btn.className = 'grille-entete-btn';
+    btn.classList.add(questionsJustes.includes(i) ? 'correct' : 'faux');
+  }
+
+  // Afficher message de reprise
+  const nbFausses = TOTAL - questionsJustes.length;
+  document.getElementById('carte-resultats').innerHTML = `
+    <div style="text-align:center;padding:20px">
+      <div style="font-size:1.1rem;font-weight:700;color:var(--bleu);margin-bottom:12px">
+        Tentative 1 complétée
+      </div>
+      <div style="font-size:.9rem;color:var(--texte-sec);margin-bottom:20px">
+        Tu as <strong>${questionsJustes.length}</strong> bonne(s) réponse(s) et
+        <strong>${nbFausses}</strong> erreur(s).<br>
+        Il te reste <strong>1 tentative</strong> pour corriger tes erreurs.
+      </div>
+      <button class="btn btn-soumettre" onclick="lancerCorrection()" style="display:inline-flex">
+        ✏️ Corriger mes erreurs (1 tentative restante)
+      </button>
+    </div>
+  `;
+}
+
+function lancerQuizTermine() {
+  // Quiz terminé — accès en lecture seule, tout verrouillé
+  document.getElementById('entete-eleve').textContent =
+    session.nom + ' — Gr. ' + session.groupe;
+  afficherEcran('ecran-resultats');
+  construireGrille();
+  melangerChoix();
+
+  // Grille tout verrouillé
+  for (let i = 1; i <= TOTAL; i++) {
+    const btn = document.getElementById('gb-' + i);
+    if (!btn) continue;
+    btn.className = 'grille-entete-btn';
+    btn.classList.add(questionsJustes.includes(i) ? 'correct' : 'faux-final');
+  }
+
+  const nbJustes  = questionsJustes.length;
+  const { cote, couleur } = calculerCote(nbJustes);
+  document.getElementById('carte-resultats').innerHTML = `
+    <div style="text-align:center;padding:20px">
+      <div style="font-size:.85rem;color:#888;margin-bottom:16px">Quiz complété — toutes les tentatives utilisées</div>
+      <div class="score-cercle" style="border-color:${couleur};background:${couleur}18">
+        <div class="score-num" style="color:${couleur}">${nbJustes}</div>
+        <div class="score-den">sur 60</div>
+      </div>
+      <div style="font-size:2rem;font-weight:800;color:${couleur};margin-bottom:4px">${cote}</div>
+      <div style="font-size:.85rem;color:#888">${session.nom} — Groupe ${session.groupe}</div>
+    </div>
+  `;
+}
+// ============================================================
+// LANCER LA CORRECTION (2e tentative)
+// ============================================================
+function lancerCorrection() {
+  tentative     = 2;
+  modeCorrection = true;
+
+  // Retour au quiz
+  afficherEcran('ecran-quiz');
+
+  // Verrouiller les questions correctes, débloquer les fausses
+  for (let i = 1; i <= TOTAL; i++) {
+    const estJuste = questionsJustes.includes(i);
+    const labels   = document.querySelectorAll(`.choix-label[data-q="${i}"]`);
+    labels.forEach(label => {
+      if (estJuste) {
+        label.classList.add('verrouillee');
+        label.querySelector('.choix-radio').disabled = true;
+      } else {
+        label.classList.remove('verrouillee');
+        label.querySelector('.choix-radio').disabled = false;
+        // Réinitialiser la sélection pour les questions fausses
+        label.querySelector('.choix-radio').checked = false;
+      }
+    });
+
+    // Mettre à jour la grille — rouges cliquables maintenant
+    const btn = document.getElementById('gb-' + i);
+    if (btn && !estJuste) {
+      btn.className = 'grille-entete-btn faux';
+      btn.onclick   = () => allerA(i);
+    }
+  }
+
+  mettreAJourBarre();
+  mettreAJourCompteur();
+
+  // Aller à la première question fausse
+  const premiereFausse = Array.from({length: TOTAL}, (_, i) => i + 1)
+    .find(i => !questionsJustes.includes(i)) || 1;
+  allerA(premiereFausse);
+
+  // Changer le texte du bouton soumettre
+  document.getElementById('btn-soumettre').textContent = 'Soumettre ma correction ✓';
+  document.getElementById('btn-soumettre').disabled = false;
+}
+
+// ============================================================
+// NAVIGATION EN MODE CORRECTION (parmi les fausses seulement)
+// ============================================================
+function naviguerCorrection(direction) {
+  if (!modeCorrection) {
+    // Mode normal
+    allerA(courant + direction);
+    return;
+  }
+
+  // Liste ordonnée des questions fausses
+  const fausses = Array.from({length: TOTAL}, (_, i) => i + 1)
+    .filter(i => !questionsJustes.includes(i));
+
+  if (fausses.length === 0) return;
+
+  const idxCourant = fausses.indexOf(courant);
+  let   idxNext;
+
+  if (idxCourant === -1) {
+    // Question courante n'est pas dans les fausses — aller à la première
+    idxNext = 0;
+  } else {
+    idxNext = idxCourant + direction;
+    // Cycle
+    if (idxNext < 0)             idxNext = fausses.length - 1;
+    if (idxNext >= fausses.length) idxNext = 0;
+  }
+
+  allerA(fausses[idxNext]);
+}
 // ============================================================
 // BASCULE ONGLETS
 // ============================================================
@@ -2048,7 +2304,22 @@ async function seConnecter() {
       session.id     = id;
       session.nom    = data.nom;
       session.groupe = data.groupe;
-      lancerQuiz();
+
+      // Restaurer l'état des tentatives
+      if (data.nbTentatives >= 2) {
+        // Quiz terminé — afficher résultats verrouillés
+        questionsJustes = data.questionsJustes || [];
+        tentative       = 2;
+        lancerQuizTermine();
+      } else if (data.nbTentatives === 1) {
+        // 1re tentative faite — proposer la correction
+        questionsJustes = data.questionsJustes || [];
+        tentative       = 1;
+        lancerQuizApres1();
+      } else {
+        // Pas encore soumis
+        lancerQuiz();
+      }
     }
   } catch(e) {
     afficherErreur(errDiv, 'Erreur de connexion. Vérifie ta connexion internet.');
@@ -2171,9 +2442,23 @@ function allerA(n) {
     MathJax.typesetPromise([slide]).catch(()=>{});
   }
   courant = n;
-  document.getElementById('nav-num').textContent = n;
-  document.getElementById('btn-precedent').disabled = (n === 1);
-  document.getElementById('btn-suivant').disabled   = (n === TOTAL);
+  const navNum = document.getElementById('nav-num');
+  if (navNum) navNum.textContent = n;
+  if (modeCorrection) {
+    // En mode correction, les boutons ne sont jamais désactivés (cycle)
+    document.getElementById('btn-precedent').disabled = false;
+    document.getElementById('btn-suivant').disabled   = false;
+    // Compteur : position parmi les fausses
+    const fausses    = Array.from({length: TOTAL}, (_, i) => i + 1)
+      .filter(i => !questionsJustes.includes(i));
+    const pos        = fausses.indexOf(n) + 1;
+    const navCompteur = document.querySelector('.nav-compteur');
+    if (navCompteur) navCompteur.innerHTML =
+      `Erreur <strong>${pos}</strong> sur <strong>${fausses.length}</strong>`;
+  } else {
+    document.getElementById('btn-precedent').disabled = (n === 1);
+    document.getElementById('btn-suivant').disabled   = (n === TOTAL);
+  }
   mettreAJourGrille();
   mettreAJourBarre();
   mettreAJourCompteur();
@@ -2183,8 +2468,8 @@ function allerA(n) {
 // Raccourcis clavier
 document.addEventListener('keydown', function(e) {
   if (!document.getElementById('ecran-quiz').classList.contains('actif')) return;
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') allerA(courant + 1);
-  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   allerA(courant - 1);
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') naviguerCorrection(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   naviguerCorrection(-1);
 });
 
 // ============================================================
@@ -2211,9 +2496,23 @@ function mettreAJourGrille() {
   for (let i = 1; i <= TOTAL; i++) {
     const btn = document.getElementById('gb-' + i);
     if (!btn) continue;
+
+    const estActuel = (i === courant);
+
+    if (btn.classList.contains('correct') || btn.classList.contains('faux-final')) {
+      btn.classList.toggle('actuel', estActuel);
+      continue;
+    }
+
+    if (modeCorrection && btn.classList.contains('faux')) {
+      btn.classList.toggle('actuel', estActuel);
+      continue;
+    }
+
+    const aReponse = !!document.querySelector(`input[name="q${i}"]:checked`);
     btn.className = 'grille-entete-btn';
-    if (document.querySelector(`input[name="q${i}"]:checked`)) btn.classList.add('repondu');
-    if (i === courant) btn.classList.add('actuel');
+    if (aReponse)  btn.classList.add('repondu');
+    if (estActuel) btn.classList.add('actuel');
   }
 }
 
@@ -2234,6 +2533,13 @@ function nbReponses() {
   return n;
 }
 
+function nbReponsesACorrigerRepondues() {
+  // En mode correction : combien de questions fausses ont une nouvelle réponse
+  const fausses = Array.from({length: TOTAL}, (_, i) => i + 1)
+    .filter(i => !questionsJustes.includes(i));
+  return fausses.filter(i => document.querySelector(`input[name="q${i}"]:checked`)).length;
+}
+
 document.addEventListener('change', function(e) {
   if (e.target.classList.contains('choix-radio')) {
     mettreAJourGrille();
@@ -2247,20 +2553,50 @@ document.addEventListener('change', function(e) {
 // ============================================================
 async function soumettre() {
   const errDiv = document.getElementById('msg-err-quiz');
-  const nb     = nbReponses();
 
-  if (nb < TOTAL) {
-    const manquantes = [];
-    for (let i = 1; i <= TOTAL; i++) {
-      if (!document.querySelector(`input[name="q${i}"]:checked`)) manquantes.push(i);
+  // En mode correction, vérifier au moins une réponse modifiée
+  // (pas besoin de vérifier toutes les questions)
+  if (!modeCorrection) {
+    const nb = nbReponses();
+    if (nb < TOTAL) {
+      const manquantes = [];
+      for (let i = 1; i <= TOTAL; i++) {
+        if (!document.querySelector(`input[name="q${i}"]:checked`)) manquantes.push(i);
+      }
+      afficherErreur(errDiv,
+        `${TOTAL - nb} question(s) sans réponse : ${manquantes.slice(0,12).join(', ')}${manquantes.length > 12 ? '…' : ''}`
+      );
+      return;
     }
-    afficherErreur(errDiv,
-      `${TOTAL - nb} question(s) sans réponse : ${manquantes.slice(0,12).join(', ')}${manquantes.length > 12 ? '…' : ''}`
-    );
-    return;
   }
 
   errDiv.classList.remove('visible');
+
+  // Afficher le modal de confirmation
+  ouvrirModal();
+  return;
+}
+
+function ouvrirModal() {
+  const titre = document.getElementById('modal-titre');
+  const texte = document.getElementById('modal-texte');
+  if (tentative === 1) {
+    titre.textContent = 'Soumettre le quiz ?';
+    texte.innerHTML = "Assure-toi d'avoir répondu à toutes tes questions.<br><br><strong>Il te restera 1 tentative</strong> pour corriger tes erreurs après cette soumission.";
+  } else {
+    titre.textContent = 'Dernière tentative !';
+    texte.innerHTML = "<strong>C'est ta dernière tentative.</strong><br><br>Une fois soumis, tu ne pourras plus modifier tes réponses. Assure-toi d'avoir corrigé toutes les questions que tu voulais.";
+  }
+  document.getElementById('modal-soumission').style.display = 'flex';
+}
+
+function fermerModal() {
+  document.getElementById('modal-soumission').style.display = 'none';
+}
+
+async function confirmerSoumission() {
+  fermerModal();
+  const errDiv = document.getElementById('msg-err-quiz');
   const btn = document.getElementById('btn-soumettre');
   btn.disabled = true;
   btn.textContent = 'Envoi en cours…';
@@ -2283,6 +2619,10 @@ async function soumettre() {
     });
 
     if (data.succes) {
+      // Mémoriser les questions justes
+      questionsJustes = data.details
+        .filter(d => d.correct)
+        .map(d => d.q);
       afficherResultats(data);
     } else {
       afficherErreur(errDiv, data.erreur || 'Erreur lors de la soumission.');
@@ -2296,19 +2636,51 @@ async function soumettre() {
   }
 }
 
+
+// ============================================================
+// COTE SELON LE SCORE
+// ============================================================
+function calculerCote(score) {
+  if (score >= 59) return { cote: 'A+', couleur: '#1a5fa8' };
+  if (score >= 56) return { cote: 'A',  couleur: '#1a5fa8' };
+  if (score >= 53) return { cote: 'A-', couleur: '#1a5fa8' };
+  if (score >= 50) return { cote: 'B+', couleur: '#2a7a3b' };
+  if (score >= 47) return { cote: 'B',  couleur: '#2a7a3b' };
+  if (score >= 44) return { cote: 'B-', couleur: '#2a7a3b' };
+  if (score >= 41) return { cote: 'C+', couleur: '#b45309' };
+  if (score >= 38) return { cote: 'C',  couleur: '#b45309' };
+  if (score >= 35) return { cote: 'C-', couleur: '#b45309' };
+  if (score >= 26) return { cote: 'D',  couleur: '#b91c1c' };
+  return               { cote: 'E',  couleur: '#b91c1c' };
+}
 // ============================================================
 // AFFICHAGE RÉSULTATS
 // ============================================================
 function afficherResultats(data) {
   afficherEcran('ecran-resultats');
+
+  // Mettre à jour la grille de nav : vert=correct, rouge=faux
+  const estDerniereTentative = tentative >= 2;
+  for (let i = 1; i <= TOTAL; i++) {
+    const btn = document.getElementById('gb-' + i);
+    if (!btn) continue;
+    const estJuste = questionsJustes.includes(i);
+    btn.className = 'grille-entete-btn';
+    if (estJuste) {
+      btn.classList.add('correct');
+    } else {
+      btn.classList.add(estDerniereTentative ? 'faux-final' : 'faux');
+    }
+  }
+
   const pct     = data.pourcentage;
-  const couleur = pct >= 80 ? '#2a7a3b' : pct >= 60 ? '#b45309' : '#b91c1c';
-  const msg     = pct >= 80 ? 'Excellent travail !' : pct >= 60 ? 'Bon effort !' : 'Continue à pratiquer !';
+  const { cote, couleur } = calculerCote(data.score);
+  const msg = data.score >= 53 ? 'Excellent travail !' : data.score >= 44 ? 'Bon effort !' : data.score >= 35 ? 'Continue à travailler !' : 'Consulte ton enseignant.';
 
   let themesHTML = '';
   for (const [theme, v] of Object.entries(data.scoresThemes)) {
     const p = Math.round(v.bon / v.total * 100);
-    const c = p >= 70 ? '#2a7a3b' : '#b45309';
+    const c = p >= 88 ? '#1a5fa8' : p >= 73 ? '#2a7a3b' : p >= 58 ? '#b45309' : '#b91c1c';
     themesHTML += `
       <div class="theme-item">
         <div class="theme-nom">${theme}</div>
@@ -2323,22 +2695,30 @@ function afficherResultats(data) {
         <div class="score-num" style="color:${couleur}">${data.score}</div>
         <div class="score-den">sur 60</div>
       </div>
-      <div style="font-size:1.5rem;font-weight:700;color:${couleur};margin-bottom:4px">${pct}%</div>
-      <div style="font-size:.95rem;color:#555;margin-bottom:8px">${msg}</div>
+      <div style="font-size:2rem;font-weight:800;color:${couleur};margin-bottom:4px;letter-spacing:.05em">${cote}</div>
+      <div style="font-size:.85rem;color:#888;margin-bottom:4px">${data.score}/60 &nbsp;·&nbsp; ${pct}%</div>
+      <div style="font-size:.9rem;color:#555;margin-bottom:8px">${msg}</div>
       <div style="font-size:.85rem;color:#888">${data.nom} — Groupe ${data.groupe}</div>
       <div class="fiche-info">Fiche n° ${data.id}</div>
     </div>
     <hr style="border:none;border-top:1.5px solid #eee;margin:20px 0">
+    <div style="font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#888;margin-bottom:12px">Profil par thème</div>
     <div style="font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#888;margin-bottom:12px">Résultats par thème</div>
     <div class="themes-grille">${themesHTML}</div>
     <div style="text-align:center;margin-top:24px;font-size:.82rem;color:#aaa">
-      Tes résultats ont été enregistrés.<br>Tu peux fermer cette fenêtre.
+      Tes résultats ont été enregistrés.${tentative < 2 ? '<br><br>' : '<br>Tu peux fermer cette fenêtre.'}
     </div>
+    ${tentative < 2 ? `<div style="text-align:center;margin-top:8px">
+      <button class="btn btn-soumettre" onclick="lancerCorrection()" style="display:inline-flex">
+        ✏️ Corriger mes erreurs (1 tentative restante)
+      </button>
+    </div>` : ''}
   `;
 
   if (window.MathJax && MathJax.typesetPromise) {
     MathJax.typesetPromise([document.getElementById('carte-resultats')]).catch(()=>{});
   }
+
 }
 
 // ============================================================
@@ -2414,7 +2794,6 @@ async function chargerBrouillon() {
           banner.style.display = 'block';
           setTimeout(() => { banner.style.display = 'none'; }, 4000);
         }
-        mettreAJourGrille();
         mettreAJourBarre();
         mettreAJourCompteur();
 
@@ -2499,5 +2878,17 @@ document.getElementById('cr-code')?.addEventListener('input', function() { this.
 document.getElementById('cr-code')?.addEventListener('keydown', e => { if (e.key === 'Enter') creerStep2(); });
 document.getElementById('cr-mdp2')?.addEventListener('keydown', e => { if (e.key === 'Enter') creerStep2(); });
 </script>
+
+<!-- MODAL CONFIRMATION SOUMISSION -->
+<div class="modal-overlay" id="modal-soumission" style="display:none">
+  <div class="modal-boite">
+    <div class="modal-titre" id="modal-titre">Soumettre le quiz ?</div>
+    <div class="modal-texte" id="modal-texte"></div>
+    <div class="modal-boutons">
+      <button class="btn btn-secondaire" onclick="fermerModal()">Annuler</button>
+      <button class="btn btn-principal" id="btn-confirmer-soumission" style="width:auto" onclick="confirmerSoumission()">Soumettre</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
