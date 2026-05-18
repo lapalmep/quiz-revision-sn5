@@ -2301,6 +2301,8 @@ async function seConnecter() {
     if (data.erreur) {
       afficherErreur(errDiv, data.erreur);
     } else {
+      localStorage.setItem('quiz_id',   id);
+      localStorage.setItem('quiz_hash', hash);
       session.id     = id;
       session.nom    = data.nom;
       session.groupe = data.groupe;
@@ -2878,6 +2880,31 @@ document.getElementById('cr-nom')?.addEventListener('keydown', e => { if (e.key 
 document.getElementById('cr-code')?.addEventListener('input', function() { this.value = this.value.toUpperCase(); });
 document.getElementById('cr-code')?.addEventListener('keydown', e => { if (e.key === 'Enter') creerStep2(); });
 document.getElementById('cr-mdp2')?.addEventListener('keydown', e => { if (e.key === 'Enter') creerStep2(); });
+
+// Reconnexion automatique au chargement
+(async function reconnexionAuto() {
+  const id   = localStorage.getItem('quiz_id');
+  const hash = localStorage.getItem('quiz_hash');
+  if (!id || !hash) return;
+  try {
+    const data = await post({ action: 'seConnecter', id, hash });
+    if (!data.succes) { localStorage.removeItem('quiz_id'); localStorage.removeItem('quiz_hash'); return; }
+    session.id     = id;
+    session.nom    = data.nom;
+    session.groupe = data.groupe;
+    if (data.nbTentatives >= 2) {
+      questionsJustes = data.questionsJustes || [];
+      tentative = 2;
+      lancerQuizTermine();
+    } else if (data.nbTentatives === 1) {
+      questionsJustes = data.questionsJustes || [];
+      tentative = 1;
+      lancerQuizApres1();
+    } else {
+      lancerQuiz();
+    }
+  } catch(e) { /* silencieux */ }
+})();
 </script>
 
 <!-- MODAL CONFIRMATION SOUMISSION -->
