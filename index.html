@@ -2909,7 +2909,7 @@ function seDeconnecter() {
   document.getElementById('entete-eleve').textContent = '';
   document.getElementById('grille-entete').style.display = 'none';
   document.querySelector('.entete').classList.remove('quiz-actif');
-  document.querySelector('.entete').style.paddingBottom = '';
+  document.querySelector('.entete').style.paddingBottom = '14px';
   session = { id:'', courriel:'', nom:'', groupe:'' };
   courant = 1; tentative = 1; questionsJustes = []; modeCorrection = false;
   afficherEcran('ecran-id');
