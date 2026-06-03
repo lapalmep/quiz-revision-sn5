@@ -106,9 +106,6 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
 .nav-compteur{font-size:.85rem;color:var(--texte-sec);text-align:center;flex:1}
 .nav-compteur strong{color:var(--bleu);font-weight:700}
 
-/* GRILLE */
-/* grille nav déplacée dans l'entête */
-
 /* ZONE SOUMISSION */
 .zone-soumettre{background:#fff;border-radius:12px;padding:20px 24px;box-shadow:var(--ombre);margin-bottom:24px;text-align:center}
 .zone-soumettre p{font-size:.9rem;color:var(--texte-sec);margin-bottom:14px}
@@ -2040,7 +2037,8 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
             <span class="choix-texte">\(f(x)=2\tan\!\left(\dfrac{\pi}{16}x\right)\)</span>
           </label>
     </div>
-  </div>  </div>
+  </div>
+  </div>
 
   </div>
 
@@ -2072,7 +2070,6 @@ body{font-family:'Noto Sans','Segoe UI',Arial,sans-serif;background:var(--gris-b
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzJJdB22SgheHH62--rtaTZL1pMLRCFGJy6S9QbQ4qx47qnh8akqhFkIk2ktAkaOU3eoA/exec';
 const TOTAL = 60;
 
-// État de session (en mémoire seulement — pas de localStorage)
 // ============================================================
 // ÉTAT SESSION
 // ============================================================
@@ -2082,21 +2079,15 @@ let tentative      = 1;    // 1 ou 2
 let questionsJustes = [];  // indices (1-60) des questions correctes après soumission
 let modeCorrection  = false; // true pendant la 2e tentative
 
-
-
 // ============================================================
 // ÉTATS DE RECONNEXION
 // ============================================================
 function lancerQuizApres1() {
-  // L'élève a soumis une fois — on lui montre l'écran résultats
-  // avec le bouton "Corriger mes erreurs"
   document.getElementById('entete-eleve').textContent =
     session.nom + ' — Gr. ' + session.groupe;
   afficherEcran('ecran-resultats');
   construireGrille();
-  melangerChoix();
 
-  // Mettre à jour la grille : vert/rouge
   for (let i = 1; i <= TOTAL; i++) {
     const btn = document.getElementById('gb-' + i);
     if (!btn) continue;
@@ -2104,7 +2095,6 @@ function lancerQuizApres1() {
     btn.classList.add(questionsJustes.includes(i) ? 'correct' : 'faux');
   }
 
-  // Afficher message de reprise
   const nbFausses = TOTAL - questionsJustes.length;
   document.getElementById('carte-resultats').innerHTML = `
     <div style="text-align:center;padding:20px">
@@ -2124,14 +2114,11 @@ function lancerQuizApres1() {
 }
 
 function lancerQuizTermine() {
-  // Quiz terminé — accès en lecture seule, tout verrouillé
   document.getElementById('entete-eleve').textContent =
     session.nom + ' — Gr. ' + session.groupe;
   afficherEcran('ecran-resultats');
   construireGrille();
-  melangerChoix();
 
-  // Grille tout verrouillé
   for (let i = 1; i <= TOTAL; i++) {
     const btn = document.getElementById('gb-' + i);
     if (!btn) continue;
@@ -2153,6 +2140,7 @@ function lancerQuizTermine() {
     </div>
   `;
 }
+
 // ============================================================
 // LANCER LA CORRECTION (2e tentative)
 // ============================================================
@@ -2160,10 +2148,8 @@ function lancerCorrection() {
   tentative     = 2;
   modeCorrection = true;
 
-  // Retour au quiz
   afficherEcran('ecran-quiz');
 
-  // Verrouiller les questions correctes, débloquer les fausses
   for (let i = 1; i <= TOTAL; i++) {
     const estJuste = questionsJustes.includes(i);
     const labels   = document.querySelectorAll(`.choix-label[data-q="${i}"]`);
@@ -2174,12 +2160,10 @@ function lancerCorrection() {
       } else {
         label.classList.remove('verrouillee');
         label.querySelector('.choix-radio').disabled = false;
-        // Réinitialiser la sélection pour les questions fausses
         label.querySelector('.choix-radio').checked = false;
       }
     });
 
-    // Mettre à jour la grille — rouges cliquables maintenant
     const btn = document.getElementById('gb-' + i);
     if (btn && !estJuste) {
       btn.className = 'grille-entete-btn faux';
@@ -2190,12 +2174,10 @@ function lancerCorrection() {
   mettreAJourBarre();
   mettreAJourCompteur();
 
-  // Aller à la première question fausse
   const premiereFausse = Array.from({length: TOTAL}, (_, i) => i + 1)
     .find(i => !questionsJustes.includes(i)) || 1;
   allerA(premiereFausse);
 
-  // Changer le texte du bouton soumettre
   document.getElementById('btn-soumettre').textContent = 'Soumettre ma correction ✓';
   document.getElementById('btn-soumettre').disabled = false;
 }
@@ -2205,12 +2187,10 @@ function lancerCorrection() {
 // ============================================================
 function naviguerCorrection(direction) {
   if (!modeCorrection) {
-    // Mode normal
     allerA(courant + direction);
     return;
   }
 
-  // Liste ordonnée des questions fausses
   const fausses = Array.from({length: TOTAL}, (_, i) => i + 1)
     .filter(i => !questionsJustes.includes(i));
 
@@ -2220,17 +2200,16 @@ function naviguerCorrection(direction) {
   let   idxNext;
 
   if (idxCourant === -1) {
-    // Question courante n'est pas dans les fausses — aller à la première
     idxNext = 0;
   } else {
     idxNext = idxCourant + direction;
-    // Cycle
     if (idxNext < 0)             idxNext = fausses.length - 1;
     if (idxNext >= fausses.length) idxNext = 0;
   }
 
   allerA(fausses[idxNext]);
 }
+
 // ============================================================
 // BASCULE ONGLETS
 // ============================================================
@@ -2323,19 +2302,15 @@ async function seConnecter() {
       mettreAJourOnline();
       demarrerInactivite();
 
-      // Restaurer l'état des tentatives
       if (data.nbTentatives >= 2) {
-        // Quiz terminé — afficher résultats verrouillés
         questionsJustes = data.questionsJustes || [];
         tentative       = 2;
         lancerQuizTermine();
       } else if (data.nbTentatives === 1) {
-        // 1re tentative faite — proposer la correction
         questionsJustes = data.questionsJustes || [];
         tentative       = 1;
         lancerQuizApres1();
       } else {
-        // Pas encore soumis
         lancerQuiz();
       }
     }
@@ -2347,7 +2322,7 @@ async function seConnecter() {
 }
 
 // ============================================================
-// CRÉATION — ÉTAPE 1 : vérifier id + courriel
+// CRÉATION — ÉTAPE 1
 // ============================================================
 async function creerStep1() {
   const btn      = document.getElementById('btn-cr-step1');
@@ -2370,7 +2345,6 @@ async function creerStep1() {
     } else {
       session.id      = id;
       session.courriel = courriel;
-      // Passer à l'étape 2
       document.getElementById('cr-step1').classList.remove('actif');
       document.getElementById('cr-step2').classList.add('actif');
       document.getElementById('cdot-1').classList.add('done');
@@ -2386,7 +2360,7 @@ async function creerStep1() {
 }
 
 // ============================================================
-// CRÉATION — ÉTAPE 2 : nom + code + mot de passe
+// CRÉATION — ÉTAPE 2
 // ============================================================
 async function creerStep2() {
   const btn    = document.getElementById('btn-cr-step2');
@@ -2438,8 +2412,6 @@ function lancerQuiz() {
     session.nom + ' — Gr. ' + session.groupe;
   afficherEcran('ecran-quiz');
   construireGrille();
-  melangerChoix();
-  // Charger le brouillon après le mélange (les values sont déjà les index originaux)
   chargerBrouillon().then(premiereNonRepondue => allerA(premiereNonRepondue || 1));
 }
 
@@ -2449,7 +2421,6 @@ function lancerQuiz() {
 function allerA(n) {
   if (n < 1 || n > TOTAL) return;
 
-  // Sauvegarder le brouillon avant de naviguer (si question courante répondue)
   const repCourante = document.querySelector(`input[name="q${courant}"]:checked`);
   if (repCourante) sauvegarderBrouillon();
 
@@ -2463,10 +2434,8 @@ function allerA(n) {
   const navNum = document.getElementById('nav-num');
   if (navNum) navNum.textContent = n;
   if (modeCorrection) {
-    // En mode correction, les boutons ne sont jamais désactivés (cycle)
     document.getElementById('btn-precedent').disabled = false;
     document.getElementById('btn-suivant').disabled   = false;
-    // Compteur : position parmi les fausses
     const fausses    = Array.from({length: TOTAL}, (_, i) => i + 1)
       .filter(i => !questionsJustes.includes(i));
     const pos        = fausses.indexOf(n) + 1;
@@ -2504,7 +2473,6 @@ function construireGrille() {
     b.onclick = () => allerA(i);
     cont.appendChild(b);
   }
-  // Afficher la grille dans l'entête et ajuster le padding
   document.getElementById('grille-entete').style.display = 'block';
   document.querySelector('.entete').classList.add('quiz-actif');
   document.querySelector('.entete').style.paddingBottom = '0';
@@ -2551,13 +2519,6 @@ function nbReponses() {
   return n;
 }
 
-function nbReponsesACorrigerRepondues() {
-  // En mode correction : combien de questions fausses ont une nouvelle réponse
-  const fausses = Array.from({length: TOTAL}, (_, i) => i + 1)
-    .filter(i => !questionsJustes.includes(i));
-  return fausses.filter(i => document.querySelector(`input[name="q${i}"]:checked`)).length;
-}
-
 document.addEventListener('change', function(e) {
   if (e.target.classList.contains('choix-radio')) {
     mettreAJourGrille();
@@ -2572,8 +2533,6 @@ document.addEventListener('change', function(e) {
 async function soumettre() {
   const errDiv = document.getElementById('msg-err-quiz');
 
-  // En mode correction, vérifier au moins une réponse modifiée
-  // (pas besoin de vérifier toutes les questions)
   if (!modeCorrection) {
     const nb = nbReponses();
     if (nb < TOTAL) {
@@ -2589,8 +2548,6 @@ async function soumettre() {
   }
 
   errDiv.classList.remove('visible');
-
-  // Afficher le modal de confirmation
   ouvrirModal();
   return;
 }
@@ -2622,7 +2579,6 @@ async function confirmerSoumission() {
   const reponses = [];
   for (let i = 1; i <= TOTAL; i++) {
     const r = document.querySelector(`input[name="q${i}"]:checked`);
-    // r.value contient l'index original (0-3) assigné lors du mélange
     reponses.push(r ? parseInt(r.value) : -1);
   }
 
@@ -2638,7 +2594,6 @@ async function confirmerSoumission() {
     });
 
     if (data.succes) {
-      // Mémoriser les questions justes
       questionsJustes = data.details
         .filter(d => d.correct)
         .map(d => d.q);
@@ -2654,7 +2609,6 @@ async function confirmerSoumission() {
     btn.textContent = 'Soumettre mes réponses ✓';
   }
 }
-
 
 // ============================================================
 // COTE SELON LE SCORE
@@ -2672,13 +2626,13 @@ function calculerCote(score) {
   if (score >= 26) return { cote: 'D',  couleur: '#b91c1c' };
   return               { cote: 'E',  couleur: '#b91c1c' };
 }
+
 // ============================================================
 // AFFICHAGE RÉSULTATS
 // ============================================================
 function afficherResultats(data) {
   afficherEcran('ecran-resultats');
 
-  // Mettre à jour la grille de nav : vert=correct, rouge=faux
   const estDerniereTentative = tentative >= 2;
   for (let i = 1; i <= TOTAL; i++) {
     const btn = document.getElementById('gb-' + i);
@@ -2721,7 +2675,6 @@ function afficherResultats(data) {
       <div class="fiche-info">Fiche n° ${data.id}</div>
     </div>
     <hr style="border:none;border-top:1.5px solid #eee;margin:20px 0">
-    <div style="font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#888;margin-bottom:12px">Profil par thème</div>
     <div style="font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#888;margin-bottom:12px">Résultats par thème</div>
     <div class="themes-grille">${themesHTML}</div>
     <div style="text-align:center;margin-top:24px;font-size:.82rem;color:#aaa">
@@ -2737,7 +2690,6 @@ function afficherResultats(data) {
   if (window.MathJax && MathJax.typesetPromise) {
     MathJax.typesetPromise([document.getElementById('carte-resultats')]).catch(()=>{});
   }
-
 }
 
 // ============================================================
@@ -2762,7 +2714,6 @@ async function post(payload) {
   return rep.json();
 }
 
-
 // ============================================================
 // BROUILLON — sauvegarde et restauration
 // ============================================================
@@ -2783,7 +2734,7 @@ async function sauvegarderBrouillon() {
       reponses: collecterReponses()
     });
   } catch(e) {
-    // Silencieux — ne pas déranger l'élève pour une sauvegarde ratée
+    // Silencieux
   }
 }
 
@@ -2795,8 +2746,6 @@ async function chargerBrouillon() {
       for (let i = 0; i < data.reponses.length; i++) {
         const val = data.reponses[i];
         if (val >= 0 && val <= 3) {
-          // Trouver le radio avec cet index original dans la question i+1
-          // Après mélange, la value du radio = index original
           const radio = document.querySelector(
             `input[name="q${i+1}"][value="${val}"]`
           );
@@ -2816,8 +2765,7 @@ async function chargerBrouillon() {
         mettreAJourBarre();
         mettreAJourCompteur();
 
-        // Aller à la première question sans réponse
-        let premiereNonRepondue = TOTAL; // par défaut la dernière
+        let premiereNonRepondue = TOTAL;
         for (let i = 1; i <= TOTAL; i++) {
           if (!document.querySelector(`input[name="q${i}"]:checked`)) {
             premiereNonRepondue = i;
@@ -2829,60 +2777,6 @@ async function chargerBrouillon() {
     }
   } catch(e) {
     // Silencieux
-  }
-}
-
-// ============================================================
-// MÉLANGE DES CHOIX — Fisher-Yates
-// Pour chaque question, on mélange les 4 choix à l'affichage
-// mais on retient l'index original (0-3) de chaque choix
-// ============================================================
-
-// Stocke pour chaque question le mapping : index affiché → index original
-// Ex: choixMapping[5] = [2, 0, 3, 1] signifie que le 1er choix affiché
-// de la Q5 correspond au choix original d'index 2
-const choixMapping = {};
-
-function melangerChoix() {
-  for (let q = 1; q <= TOTAL; q++) {
-    const labels = Array.from(
-      document.querySelectorAll(`.choix-label[data-q="${q}"]`)
-    );
-    if (!labels.length) continue;
-
-    const groupe = labels[0].closest('.choix-groupe');
-    const n = labels.length;
-
-    // Indices originaux dans l'ordre actuel (0, 1, 2, 3)
-    const indices = labels.map((_, i) => i);
-
-    // Fisher-Yates
-    for (let i = n - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [indices[i], indices[j]] = [indices[j], indices[i]];
-    }
-
-    // choixMapping[q][position affichée] = index original
-    choixMapping[q] = indices;
-
-    // Réordonner les labels dans le DOM
-    indices.forEach(origIdx => {
-      groupe.appendChild(labels[origIdx]);
-    });
-
-    // Mettre à jour les valeurs des radios : value = index original
-    // (indépendamment de la lettre A/B/C/D affichée)
-    const labelsApres = Array.from(
-      document.querySelectorAll(`.choix-label[data-q="${q}"]`)
-    );
-    labelsApres.forEach((label, pos) => {
-      const radio = label.querySelector('.choix-radio');
-      // La value du radio = index original du choix à cette position
-      radio.value = choixMapping[q][pos];
-      // Mettre à jour la lettre affichée
-      const lettreEl = label.querySelector('.choix-lettre');
-      if (lettreEl) lettreEl.textContent = ['A','B','C','D'][pos];
-    });
   }
 }
 
@@ -2951,7 +2845,7 @@ function demarrerInactivite() {
 }
 
 function resetInactivite() {
-  if (!session.id) return; // pas connecté
+  if (!session.id) return;
   demarrerInactivite();
 }
 
